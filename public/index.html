@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Dev Log — Stream Overlay</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            background-color: #07090e;
+            color: #e2e8f0;
+            font-family: 'JetBrains Mono', monospace;
+            overflow: hidden;
+        }
+
+        .terminal-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: rgba(10, 12, 18, 0.96);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.9), 0 0 25px rgba(34, 197, 94, 0.1);
+        }
+
+        /* Header bar */
+        .terminal-header {
+            flex-shrink: 0;
+            background: #0f121a;
+            padding: 11px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justifyContent: space-between;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+        }
+        .dot-red { background: #ef4444; }
+        .dot-yellow { background: #eab308; }
+        .dot-green { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
+
+        .terminal-title {
+            font-size: 11.5px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            color: #9ca3af;
+            text-transform: uppercase;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-badge {
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.6px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            color: #22c55e;
+            background: rgba(34, 197, 94, 0.16);
+            border: 1px solid rgba(34, 197, 94, 0.35);
+        }
+
+        /* Dynamic scrolling stream */
+        .terminal-stream {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            scroll-behavior: smooth;
+            scrollbar-width: none;
+        }
+
+        .terminal-stream::-webkit-scrollbar {
+            display: none;
+        }
+
+        .log-entry {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            padding-left: 12px;
+            border-left: 2.5px solid rgba(255, 255, 255, 0.12);
+            animation: fadeIn 0.22s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Color accents per project / kind */
+        .log-user { border-left-color: #38bdf8; }
+        .log-plan { border-left-color: #a78bfa; }
+        .log-action { border-left-color: #facc15; }
+        .log-done { border-left-color: #22c55e; }
+
+        .log-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badge {
+            font-size: 9.5px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            padding: 1px 6px;
+            border-radius: 3px;
+        }
+        .badge-user { color: #38bdf8; background: rgba(56, 189, 248, 0.12); }
+        .badge-plan { color: #a78bfa; background: rgba(167, 139, 250, 0.12); }
+        .badge-action { color: #facc15; background: rgba(250, 204, 21, 0.12); }
+        .badge-done { color: #22c55e; background: rgba(34, 197, 94, 0.12); }
+
+        .time-text {
+            font-size: 10.5px;
+            color: #64748b;
+        }
+
+        .title-text {
+            font-size: 13.5px;
+            line-height: 1.5;
+            color: #f8fafc;
+            word-break: break-word;
+            font-weight: 500;
+        }
+
+        /* Footer */
+        .live-footer {
+            flex-shrink: 0;
+            padding: 7px 15px;
+            background: rgba(15, 18, 26, 0.85);
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            display: flex;
+            align-items: center;
+            justifyContent: space-between;
+            font-size: 10.5px;
+            color: #64748b;
+        }
+
+        .pulse-cursor {
+            display: inline-block;
+            width: 7px;
+            height: 12px;
+            background: #22c55e;
+            vertical-align: middle;
+            margin-left: 4px;
+            animation: blink 1s step-start infinite;
+        }
+
+        @keyframes blink { 50% { opacity: 0; } }
+    </style>
+</head>
+<body>
+    <div class="terminal-container">
+        <!-- Terminal Header -->
+        <div class="terminal-header">
+            <div class="header-left">
+                <div class="dot dot-red"></div>
+                <div class="dot dot-yellow"></div>
+                <div class="dot dot-green"></div>
+                <span class="terminal-title">LIVE DEV LOG</span>
+            </div>
+            <div class="header-right">
+                <span class="status-badge" id="status-badge">LIVE STREAM</span>
+            </div>
+        </div>
+
+        <!-- Dynamic Event Stream -->
+        <div class="terminal-stream" id="stream-container">
+            <!-- Log entries -->
+        </div>
+
+        <!-- Live Footer -->
+        <div class="live-footer">
+            <span>● MULTI-AGENT DEV FEED</span>
+            <span>AUTO-SCROLL <span class="pulse-cursor"></span></span>
+        </div>
+    </div>
+
+    <script>
+        const ws = new WebSocket('ws://' + window.location.host + '/ws');
+        const container = document.getElementById('stream-container');
+
+        function renderEvents(events) {
+            container.innerHTML = '';
+            events.forEach(ev => {
+                const div = document.createElement('div');
+                div.className = `log-entry log-${ev.type || 'action'}`;
+                
+                div.innerHTML = `
+                    <div class="log-meta">
+                        <span class="badge badge-${ev.type || 'action'}">${ev.badge || 'ACTION'}</span>
+                        <span class="time-text">${ev.time}</span>
+                    </div>
+                    <div class="title-text">${ev.title || ''}</div>
+                `;
+                container.appendChild(div);
+            });
+
+            container.scrollTop = container.scrollHeight;
+        }
+
+        ws.onmessage = (e) => {
+            try {
+                const data = JSON.parse(e.data);
+                if (Array.isArray(data.events)) {
+                    renderEvents(data.events);
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        };
+
+        ws.onclose = () => {
+            setTimeout(() => window.location.reload(), 2000);
+        };
+    </script>
+</body>
+</html>
