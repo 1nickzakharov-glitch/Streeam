@@ -45,10 +45,7 @@ class PiAdapter extends BaseAdapter {
         : 'Editing source code to apply changes';
     }
     if (tool === 'todo') {
-      if (args?.task) {
-        const enMilestone = this.translator ? await this.translator.translate(args.task, 'milestone') : args.task;
-        return `Executing milestone: ${enMilestone}`;
-      }
+      // Return null here, we handle todo specially as an interactive checklist
       return null;
     }
     if (tool === 'bash') {
@@ -74,7 +71,6 @@ class PiAdapter extends BaseAdapter {
       if (cmd.startsWith('npm install') || cmd.startsWith('pnpm install')) {
         return 'Resolving and updating project dependencies';
       }
-      // If bash command is arbitrary, ask translator for a clean natural explanation
       if (this.translator && cmd.length > 5) {
         return await this.translator.translate(cmd, 'action');
       }
@@ -121,7 +117,42 @@ class PiAdapter extends BaseAdapter {
           }));
         }
       } else if (role === 'assistant' && Array.isArray(content)) {
-        // 1. High-level agent plan / reasoning
+        // 1. Todo tool call: extract full checklist / milestone plan
+        for (const p of content) {
+          if (p.type === 'toolCall' && p.name === 'todo') {
+            const args = p.arguments || {};
+            if (args.list && Array.isArray(args.list)) {
+              // Phased list
+              const allItems = [];
+              args.list.forEach(ph => {
+                if (Array.isArray(ph.items)) {
+                  ph.items.forEach(it => allItems.push({ text: it, done: false }));
+                }
+              });
+              this.emitEvent(createUnifiedEvent({
+                source: 'pi',
+                project,
+                type: 'plan',
+                badge: `${project} • AGENT PLAN`,
+                title: args.list[0]?.phase || 'Sprint Plan',
+                meta: { kind: 'todo_list', phase: args.list[0]?.phase, items: allItems },
+                timestamp,
+              }));
+            } else if (args.op === 'done' || args.op === 'start') {
+              this.emitEvent(createUnifiedEvent({
+                source: 'pi',
+                project,
+                type: args.op === 'done' ? 'done' : 'action',
+                badge: args.op === 'done' ? `${project} • COMPLETED STEP` : `${project} • AGENT ACTION`,
+                title: args.task || 'Task update',
+                meta: { kind: 'todo_update', op: args.op, task: args.task },
+                timestamp,
+              }));
+            }
+          }
+        }
+
+        // 2. High-level agent plan / reasoning
         for (const p of content) {
           if (p.type === 'thinking' && p.thinking) {
             const lines = p.thinking.split('\n').map(l => l.replace(/\*\*/g, '').trim()).filter(Boolean);
@@ -140,9 +171,9 @@ class PiAdapter extends BaseAdapter {
           }
         }
 
-        // 2. High-level meaningful action
+        // 3. High-level meaningful action
         for (const p of content) {
-          if (p.type === 'toolCall') {
+          if (p.type === 'toolCall' && p.name !== 'todo') {
             const macro = await this.formatAction(p.name, p.arguments);
             if (macro) {
               this.emitEvent(createUnifiedEvent({
@@ -158,7 +189,7 @@ class PiAdapter extends BaseAdapter {
           }
         }
 
-        // 3. Completed step summary
+        // 4. Completed step summary
         for (const p of content) {
           if (p.type === 'text' && p.text && p.text.trim().length > 15) {
             const first = p.text.split('\n\n')[0].trim();

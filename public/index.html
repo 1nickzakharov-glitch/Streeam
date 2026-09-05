@@ -14,7 +14,6 @@
             --text-main: #e4e4e7;
             --text-meta: rgba(255, 255, 255, 0.40);
             
-            /* Яркие сочные цвета префиксов без плашек */
             --color-user: #00d2ff;   /* Яркий голубой */
             --color-plan: #c084fc;   /* Яркий фиолетовый */
             --color-action: #facc15; /* Яркий желтый */
@@ -161,39 +160,51 @@
             50% { opacity: 0.6; transform: scale(1.15); }
         }
 
-        /* 
-           ЛЕНТА СООБЩЕНИЙ:
-           Идеальное ровное выравнивание по левой вертикальной линии
-        */
+        /* Лента сообщений */
         .terminal-stream {
             flex: 1;
             padding: 22px 20px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 26px; /* Просторное расстояние между событиями */
+            gap: 24px;
             scroll-behavior: smooth;
             scrollbar-width: none;
-            padding-bottom: 145px; /* Запас под крупного милого кота */
+            padding-bottom: 140px;
         }
 
         .terminal-stream::-webkit-scrollbar {
             display: none;
         }
 
-        /* Обычные записи: 14px отступ совпадает с внутренним текстом плашки пользователя */
+        /* 
+           ПЛАВНОЕ ДОБАВЛЕНИЕ НОВЫХ СООБЩЕНИЙ БЕЗ МОРГАНИЯ:
+           Только новый элемент анимируется плавно снизу вверх,
+           а уже существующие не перерисовываются и не моргают!
+        */
         .log-entry {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 5px;
             padding: 0 14px;
             margin: 0;
-            animation: fadeIn 0.16s ease-out;
+            opacity: 1;
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(4px); }
-            to { opacity: 1; transform: translateY(0); }
+        .log-entry.new-item {
+            animation: smoothSlideIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes smoothSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .log-meta {
@@ -218,7 +229,6 @@
             text-transform: uppercase;
             padding: 0;
             background: transparent !important;
-            border-radius: 0;
         }
 
         .badge-user { color: var(--color-user); }
@@ -273,6 +283,61 @@
             flex-shrink: 0;
         }
 
+        /* 
+           ИНТЕРАКТИВНЫЙ ТЕРМИНАЛЬНЫЙ TODO-БЛОК ДЛЯ AGENT PLAN (как на скриншоте)
+        */
+        .todo-container {
+            margin-top: 6px;
+            padding: 10px 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            font-family: var(--font-code);
+            font-size: 12px;
+        }
+
+        .todo-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #94a3b8;
+            font-weight: 600;
+            font-size: 11.5px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 5px;
+            margin-bottom: 3px;
+        }
+
+        .todo-phase {
+            color: #38bdf8;
+            font-weight: 600;
+        }
+
+        .todo-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #cbd5e1;
+            line-height: 1.4;
+        }
+
+        .todo-row.completed {
+            color: #64748b;
+            text-decoration: line-through;
+        }
+
+        .todo-check {
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        .todo-circle {
+            color: #38bdf8;
+            font-weight: bold;
+        }
+
         /* Нижняя строка */
         .terminal-footer {
             flex-shrink: 0;
@@ -298,7 +363,7 @@
         @keyframes blink { 50% { opacity: 0; } }
 
         /* =========================================================
-           ОРИГИНАЛЬНЫЙ РЫЖИЙ КОТ-ПРОГРАММИСТ (PIXELPAWS SPRITESHEET)
+           ОТЧЕТЛИВЫЙ И МИЛЫЙ PIXELPAWS КОТИК С ЧЕТКИМИ КАДРАМИ
            ========================================================= */
         .pixel-buddy-wrapper {
             position: absolute;
@@ -329,11 +394,12 @@
             50% { transform: translateY(-2px); }
         }
 
-        #cat-canvas {
-            width: 105px;
-            height: 150px;
+        #cat-sprite-img {
+            width: 110px;
+            height: 88px;
+            object-fit: contain;
             image-rendering: pixelated;
-            filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.95));
+            filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.9));
         }
 
         /* Canvas Confetti */
@@ -383,10 +449,10 @@
             <!-- Dynamic entries -->
         </div>
 
-        <!-- Настоящий милый рыжий кот из PixelPaws с клавиатурой и ноутбуком -->
+        <!-- Четкий, крупный и медленный анимированный рыжий кот с клавиатурой -->
         <div class="pixel-buddy-wrapper">
             <div class="pet-speech-cloud" id="buddy-speech">coding live... ⚡</div>
-            <canvas id="cat-canvas" width="210" height="300"></canvas>
+            <img id="cat-sprite-img" src="cat-type-1.png" alt="Pixel Cat" />
         </div>
 
         <!-- Terminal Footer -->
@@ -398,13 +464,14 @@
 
     <script>
         let rawEvents = [];
+        let renderedEventIds = new Set();
         let activeFilter = 'all';
-        let lastEventCount = 0;
 
         const container = document.getElementById('stream-container');
         const projectTag = document.getElementById('project-tag');
         const footerCount = document.getElementById('footer-count');
         const buddySpeech = document.getElementById('buddy-speech');
+        const catImg = document.getElementById('cat-sprite-img');
 
         const checkSvg = `
             <svg class="check-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -419,22 +486,49 @@
                 const text = btn.innerText.toLowerCase();
                 btn.classList.toggle('active', text === source || (source === 'pi' && text === 'orca'));
             });
-            render();
+            // Full re-render on filter click
+            renderedEventIds.clear();
+            container.innerHTML = '';
+            renderEvents(true);
         }
 
-        function render() {
-            container.innerHTML = '';
+        // Рендер без моргания: обновляются только новые элементы, существующие не трогаются!
+        function renderEvents(isFilterSwitch = false) {
             const filtered = activeFilter === 'all'
                 ? rawEvents
                 : rawEvents.filter(ev => ev.source === activeFilter || (activeFilter === 'pi' && (ev.source === 'orca' || ev.source === 'pi')));
 
             filtered.forEach(ev => {
+                if (renderedEventIds.has(ev.id)) return; // Уже отрендерен, не дергаем!
+
+                renderedEventIds.add(ev.id);
                 const type = ev.type || 'action';
                 const div = document.createElement('div');
-                div.className = `log-entry log-${type}`;
+                div.className = `log-entry log-${type} ${isFilterSwitch ? '' : 'new-item'}`;
+                div.id = `msg-${ev.id}`;
 
                 const badgeText = ev.badge || (type === 'user' ? 'USER PROMPT' : 'AGENT ACTION');
                 const isDone = type === 'done';
+
+                let todoHtml = '';
+                if (ev.meta && ev.meta.kind === 'todo_list' && Array.isArray(ev.meta.items)) {
+                    const itemsHtml = ev.meta.items.map(it => `
+                        <div class="todo-row ${it.done ? 'completed' : ''}">
+                            <span class="${it.done ? 'todo-check' : 'todo-circle'}">${it.done ? '✓' : '○'}</span>
+                            <span>${escapeHtml(it.text)}</span>
+                        </div>
+                    `).join('');
+
+                    todoHtml = `
+                        <div class="todo-container">
+                            <div class="todo-header">
+                                <span class="todo-phase">Todo: ${escapeHtml(ev.meta.phase || 'Sprint')}</span>
+                                <span>0/${ev.meta.items.length} done</span>
+                            </div>
+                            ${itemsHtml}
+                        </div>
+                    `;
+                }
 
                 div.innerHTML = `
                     <div class="log-meta">
@@ -442,6 +536,7 @@
                         <span class="time-text">${ev.time || ''}</span>
                     </div>
                     <div class="title-text">${isDone ? checkSvg : ''}${escapeHtml(ev.title || '')}</div>
+                    ${todoHtml}
                 `;
                 container.appendChild(div);
             });
@@ -451,20 +546,6 @@
             }
 
             container.scrollTop = container.scrollHeight;
-
-            if (rawEvents.length > lastEventCount && rawEvents.length > 0) {
-                const latest = rawEvents[rawEvents.length - 1];
-                if (latest.type === 'done') {
-                    triggerMiniConfetti();
-                    catState = 'proud';
-                    if (buddySpeech) buddySpeech.innerText = 'task completed! 🎉';
-                    setTimeout(() => { 
-                        catState = 'typing';
-                        if (buddySpeech) buddySpeech.innerText = 'coding live... ⚡'; 
-                    }, 4000);
-                }
-            }
-            lastEventCount = rawEvents.length;
         }
 
         function escapeHtml(str) {
@@ -476,66 +557,30 @@
         }
 
         // =======================================================
-        // PIXELPAWS SPRITESHEET ANIMATION RENDERER
+        // ПЛАВНАЯ СПОКОЙНАЯ АНИМАЦИЯ КОТИКА (МЕДЛЕННО И ЧЕТКО)
         // =======================================================
-        const catCanvas = document.getElementById('cat-canvas');
-        const catCtx = catCanvas.getContext('2d');
-        catCtx.imageSmoothingEnabled = false;
+        let catFrame = 1;
+        let isProud = false;
 
-        const spriteSheet = new Image();
-        spriteSheet.src = 'cat-orange-sheet.png';
-
-        const CELL_W = 210;
-        const CELL_H = 300;
-        const COLS = 4;
-
-        // Frames from manifest:
-        // typing: 16, 17
-        // proud: 34
-        // idle: 0, 1
-        let catState = 'typing';
-        let frameCounter = 0;
-
-        function getCellCoords(frameIndex) {
-            const col = frameIndex % COLS;
-            const row = Math.floor(frameIndex / COLS);
-            return { x: col * CELL_W, y: row * CELL_H };
-        }
-
-        function animateCatSprite() {
-            catCtx.clearRect(0, 0, CELL_W, CELL_H);
-
-            if (spriteSheet.complete && spriteSheet.naturalWidth > 0) {
-                let currentFrame = 16;
-
-                if (catState === 'typing') {
-                    // Calm, smooth typing: switch every 10 ticks (~5 fps)
-                    const typingFrames = [16, 17];
-                    const idx = Math.floor(frameCounter / 10) % typingFrames.length;
-                    currentFrame = typingFrames[idx];
-                } else if (catState === 'proud') {
-                    currentFrame = 34; // Proud sparkle cat
-                } else if (catState === 'idle') {
-                    const idleFrames = [0, 1];
-                    const idx = Math.floor(frameCounter / 18) % idleFrames.length;
-                    currentFrame = idleFrames[idx];
-                }
-
-                const { x, y } = getCellCoords(currentFrame);
-                catCtx.drawImage(
-                    spriteSheet,
-                    x, y, CELL_W, CELL_H,
-                    0, 0, CELL_W, CELL_H
-                );
+        setInterval(() => {
+            if (isProud) {
+                catImg.src = 'cat-proud.png';
+            } else {
+                catFrame = catFrame === 1 ? 2 : 1;
+                catImg.src = catFrame === 1 ? 'cat-type-1.png' : 'cat-type-2.png';
             }
+        }, 550); // Спокойная, размеренная смена кадра каждые 550мс
 
-            frameCounter++;
-            requestAnimationFrame(animateCatSprite);
+        function celebrateTask() {
+            triggerMiniConfetti();
+            isProud = true;
+            catImg.src = 'cat-proud.png';
+            if (buddySpeech) buddySpeech.innerText = 'milestone finished! 🎉';
+            setTimeout(() => {
+                isProud = false;
+                if (buddySpeech) buddySpeech.innerText = 'coding live... ⚡';
+            }, 4000);
         }
-
-        spriteSheet.onload = () => {
-            animateCatSprite();
-        };
 
         // ============================================
         // Canvas Confetti
@@ -600,8 +645,17 @@
                     const data = JSON.parse(e.data);
                     if (data.project) projectTag.innerText = data.project;
                     if (Array.isArray(data.events)) {
+                        const prevCount = rawEvents.length;
                         rawEvents = data.events;
-                        render();
+                        renderEvents(false);
+
+                        // If new event added and it's done -> celebrate
+                        if (rawEvents.length > prevCount && rawEvents.length > 0) {
+                            const latest = rawEvents[rawEvents.length - 1];
+                            if (latest.type === 'done') {
+                                celebrateTask();
+                            }
+                        }
                     }
                 } catch (err) {
                     console.error(err);
