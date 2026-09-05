@@ -12,14 +12,17 @@
             --bg-header: #050505;
             
             --text-main: #e4e4e7;
-            --text-meta: rgba(255, 255, 255, 0.40); /* Заметно более прозрачный для таймкодов и префиксов */
-            --text-badge: rgba(255, 255, 255, 0.50);
+            --text-meta: rgba(255, 255, 255, 0.40);
             
-            --user-cyan: #00d2ff;
-            --user-bg: rgba(0, 210, 255, 0.16); /* Более заметная и приятная заливка для человека */
-            
-            --green-done: #10b981;
-            --green-bg: rgba(16, 185, 129, 0.12);
+            /* Яркие сочные цвета префиксов без плашек */
+            --color-user: #00d2ff;   /* Яркий голубой */
+            --color-plan: #c084fc;   /* Яркий фиолетовый для мыслей */
+            --color-action: #facc15; /* Яркий сочный желтый для действий */
+            --color-done: #34d399;   /* Яркий зеленый для завершения */
+            --color-system: #f87171; /* Яркий красный для системных/окружения */
+
+            --user-bg: rgba(0, 210, 255, 0.16);
+            --green-bg: rgba(16, 185, 129, 0.14);
             
             --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Inter", sans-serif;
             --font-code: "SF Mono", Menlo, Monaco, monospace;
@@ -41,7 +44,6 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Чистый терминальный фрейм */
         .terminal-container {
             width: 100%;
             height: 100%;
@@ -84,7 +86,6 @@
         .dot-yellow { background: #ffbd2e; }
         .dot-green { background: #27c93f; }
 
-        /* Чистая индикация активного рабочего пространства */
         .workspace-title {
             font-size: 11.5px;
             font-weight: 600;
@@ -160,28 +161,32 @@
             50% { opacity: 0.6; transform: scale(1.15); }
         }
 
-        /* Лента сообщений: ровное идеальное выравнивание по левому краю без лишних паразитных отступов */
+        /* 
+           ЛЕНТА СООБЩЕНИЙ:
+           Базовый отступ 20px. Все блоки выровнены строго по левой координате!
+        */
         .terminal-stream {
             flex: 1;
-            padding: 18px 22px;
+            padding: 20px 20px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
             gap: 20px;
             scroll-behavior: smooth;
             scrollbar-width: none;
-            padding-bottom: 110px;
+            padding-bottom: 120px;
         }
 
         .terminal-stream::-webkit-scrollbar {
             display: none;
         }
 
+        /* Обычные записи: 14px отступ совпадает с внутренним текстом плашки пользователя */
         .log-entry {
             display: flex;
             flex-direction: column;
             gap: 4px;
-            padding: 0;
+            padding: 0 14px;
             margin: 0;
             animation: fadeIn 0.16s ease-out;
         }
@@ -191,13 +196,12 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Префиксы и время: прозрачнее основного текста, выровнены строго по левой оси */
+        /* Мета-строка */
         .log-meta {
             display: flex;
             align-items: center;
             gap: 8px;
             font-size: 11px;
-            color: var(--text-meta);
             padding: 0;
             margin: 0;
         }
@@ -208,16 +212,23 @@
             font-family: var(--font-code);
         }
 
+        /* ЧИСТЫЙ ЯРКИЙ ЦВЕТНОЙ ПРЕФИКС БЕЗ КАКИХ-ЛИБО ПЛАШЕК */
         .badge {
-            font-size: 10px;
-            font-weight: 600;
-            letter-spacing: 0.3px;
+            font-size: 10.5px;
+            font-weight: 700;
+            letter-spacing: 0.4px;
             text-transform: uppercase;
-            padding: 1px 5px;
-            border-radius: 3px;
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text-badge);
+            padding: 0;
+            background: transparent !important; /* Никаких плашек */
+            border-radius: 0;
         }
+
+        /* Цветовая дифференциация префиксов */
+        .badge-user { color: var(--color-user); }
+        .badge-plan { color: var(--color-plan); }
+        .badge-action { color: var(--color-action); }
+        .badge-done { color: var(--color-done); }
+        .badge-system { color: var(--color-system); }
 
         .title-text {
             font-size: 13.5px;
@@ -230,19 +241,17 @@
             margin: 0;
         }
 
-        /* Сообщение пользователя: аккуратная мягкая заливка, сбалансированные внутренние отступы */
+        /* Сообщение пользователя: мягкая заливка */
         .log-user {
             background: var(--user-bg);
             border-radius: 8px;
-            padding: 13px 16px;
-            margin: 2px 0;
+            padding: 12px 14px;
+            margin: 0;
             box-shadow: 0 4px 20px rgba(0, 210, 255, 0.08);
         }
 
         .log-user .badge {
-            background: rgba(0, 210, 255, 0.28);
-            color: #38bdf8;
-            font-weight: 700;
+            color: var(--color-user);
         }
 
         .log-user .title-text {
@@ -294,11 +303,11 @@
         @keyframes blink { 50% { opacity: 0; } }
 
         /* =========================================================
-           РЕАЛИСТИЧНЫЙ, ЖИВОЙ И ДЕТАЛИЗИРОВАННЫЙ КИБЕР-КОТИК
+           16-BIT REALISTIC PIXEL ART CAT (Canvas Rendered)
            ========================================================= */
         .pixel-buddy-wrapper {
             position: absolute;
-            bottom: 26px;
+            bottom: 24px;
             right: 22px;
             display: flex;
             flex-direction: column;
@@ -314,9 +323,9 @@
             font-size: 10px;
             font-weight: 500;
             color: #38bdf8;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
             white-space: nowrap;
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.8);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.85);
             animation: petBounce 3s ease-in-out infinite;
         }
 
@@ -325,370 +334,11 @@
             50% { transform: translateY(-2.5px); }
         }
 
-        /* Реалистичный пиксельный котик со столом, лампой, кружкой и клавиатурой */
-        .pixel-pet {
-            width: 106px;
-            height: 84px;
-            position: relative;
+        #cat-canvas {
+            width: 120px;
+            height: 90px;
             image-rendering: pixelated;
-        }
-
-        /* Стол */
-        .pet-desk {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 106px;
-            height: 16px;
-            background: #1c1917;
-            border-radius: 3px;
-        }
-
-        /* Кофейная кружка с паром */
-        .pet-coffee {
-            position: absolute;
-            bottom: 16px;
-            left: 5px;
-            width: 8px;
-            height: 9px;
-            background: #e2e8f0;
-            border-radius: 1px 1px 2px 2px;
-        }
-        .coffee-steam {
-            position: absolute;
-            top: -6px;
-            left: 2px;
-            width: 3px;
-            height: 5px;
-            background: rgba(255, 255, 255, 0.4);
-            border-radius: 2px;
-            animation: steamFloat 1.8s infinite ease-out;
-        }
-        @keyframes steamFloat {
-            0% { transform: translateY(0) scaleX(0.8); opacity: 0; }
-            50% { opacity: 0.6; }
-            100% { transform: translateY(-5px) scaleX(1.4); opacity: 0; }
-        }
-
-        /* Монитор с клавиатурой */
-        .pet-pc {
-            position: absolute;
-            bottom: 16px;
-            left: 17px;
-            width: 40px;
-            height: 31px;
-            background: #27272a;
-            border-radius: 3px;
-            box-shadow: 0 0 16px rgba(0, 210, 255, 0.18);
-        }
-
-        .pet-screen {
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            right: 2px;
-            bottom: 2px;
-            background: #030712;
-            border-radius: 2px;
-            overflow: hidden;
-        }
-
-        .screen-line-1 {
-            position: absolute;
-            top: 3px;
-            left: 3px;
-            width: 20px;
-            height: 2px;
-            background: #00d2ff;
-            box-shadow: 0 0 4px #00d2ff;
-            animation: codeType1 1.2s infinite steps(3);
-        }
-
-        .screen-line-2 {
-            position: absolute;
-            top: 8px;
-            left: 3px;
-            width: 28px;
-            height: 2px;
-            background: #10b981;
-            box-shadow: 0 0 4px #10b981;
-            animation: codeType2 0.85s infinite steps(4);
-        }
-
-        .screen-line-3 {
-            position: absolute;
-            top: 13px;
-            left: 3px;
-            width: 16px;
-            height: 2px;
-            background: #c084fc;
-            box-shadow: 0 0 4px #c084fc;
-            animation: codeType1 1.4s infinite steps(2);
-        }
-
-        .screen-line-4 {
-            position: absolute;
-            top: 18px;
-            left: 3px;
-            width: 24px;
-            height: 2px;
-            background: #f59e0b;
-            box-shadow: 0 0 4px #f59e0b;
-            animation: codeType2 1.1s infinite steps(3);
-        }
-
-        @keyframes codeType1 { 50% { width: 8px; } }
-        @keyframes codeType2 { 50% { width: 15px; } }
-
-        .pet-pc-stand {
-            position: absolute;
-            bottom: 11px;
-            left: 32px;
-            width: 10px;
-            height: 6px;
-            background: #3f3f46;
-        }
-
-        /* Клавиатура */
-        .pet-keyboard {
-            position: absolute;
-            bottom: 16px;
-            left: 20px;
-            width: 32px;
-            height: 4px;
-            background: #374151;
-            border-radius: 1px;
-        }
-
-        /* Сам реалистичный котик (живой мех, анатомия ушек, мордочки, светящийся воротничок) */
-        .pet-creature {
-            position: absolute;
-            bottom: 14px;
-            right: 8px;
-            width: 48px;
-            height: 52px;
-            animation: catBreathing 2.4s ease-in-out infinite;
-        }
-
-        @keyframes catBreathing {
-            0%, 100% { transform: translateY(0) scaleY(1); }
-            50% { transform: translateY(-1.5px) scaleY(1.02); }
-        }
-
-        /* Ушки с розовой сердцевиной и шерстинками */
-        .pet-ear-left {
-            position: absolute;
-            top: 0;
-            left: 6px;
-            width: 13px;
-            height: 13px;
-            background: #2563eb;
-            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-        }
-        .pet-ear-left::after {
-            content: '';
-            position: absolute;
-            top: 4px;
-            left: 3px;
-            width: 7px;
-            height: 7px;
-            background: #f472b6;
-            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-        }
-
-        .pet-ear-right {
-            position: absolute;
-            top: 0;
-            right: 6px;
-            width: 13px;
-            height: 13px;
-            background: #2563eb;
-            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-        }
-        .pet-ear-right::after {
-            content: '';
-            position: absolute;
-            top: 4px;
-            right: 3px;
-            width: 7px;
-            height: 7px;
-            background: #f472b6;
-            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-        }
-
-        /* Голова котика с мягкими гранями */
-        .pet-head {
-            position: absolute;
-            top: 8px;
-            left: 3px;
-            width: 42px;
-            height: 30px;
-            background: #3b82f6;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        /* Тень мордочки */
-        .pet-face-shadow {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 14px;
-            background: #2563eb;
-            border-radius: 0 0 10px 10px;
-        }
-
-        /* Большие выразительные живые глаза с бликами */
-        .pet-eyes {
-            position: absolute;
-            top: 8px;
-            left: 7px;
-            right: 7px;
-            display: flex;
-            justify-content: space-between;
-            z-index: 5;
-        }
-
-        .pet-eye {
-            width: 9px;
-            height: 11px;
-            background: #020617;
-            border-radius: 3px;
-            position: relative;
-            animation: petBlink 4s infinite;
-        }
-
-        .pet-eye::before {
-            content: '';
-            position: absolute;
-            top: 1.5px;
-            left: 1.5px;
-            width: 4px;
-            height: 4px;
-            background: #ffffff;
-            border-radius: 2px;
-        }
-
-        .pet-eye::after {
-            content: '';
-            position: absolute;
-            bottom: 1.5px;
-            right: 1.5px;
-            width: 2.5px;
-            height: 2.5px;
-            background: #00d2ff;
-            border-radius: 50%;
-        }
-
-        @keyframes petBlink {
-            0%, 94%, 100% { transform: scaleY(1); }
-            97% { transform: scaleY(0.1); }
-        }
-
-        /* Розовые щёчки */
-        .pet-cheeks {
-            position: absolute;
-            bottom: 4px;
-            left: 5px;
-            right: 5px;
-            display: flex;
-            justify-content: space-between;
-            z-index: 5;
-        }
-
-        .pet-cheek {
-            width: 6px;
-            height: 4px;
-            background: #f472b6;
-            border-radius: 2px;
-            opacity: 0.85;
-        }
-
-        /* Носик и мордочка */
-        .pet-muzzle {
-            position: absolute;
-            bottom: 6px;
-            left: 19px;
-            width: 4px;
-            height: 3px;
-            background: #fda4af;
-            border-radius: 2px;
-            z-index: 5;
-        }
-
-        /* Тельце с мягким животиком */
-        .pet-body {
-            position: absolute;
-            bottom: 0;
-            left: 9px;
-            width: 32px;
-            height: 21px;
-            background: #1d4ed8;
-            border-radius: 8px;
-        }
-        .pet-belly {
-            position: absolute;
-            bottom: 2px;
-            left: 14px;
-            width: 14px;
-            height: 14px;
-            background: #60a5fa;
-            border-radius: 6px;
-        }
-
-        /* Лапки печатают по клавиатуре */
-        .pet-paws {
-            position: absolute;
-            bottom: 4px;
-            left: -4px;
-            display: flex;
-            gap: 12px;
-            z-index: 10;
-        }
-
-        .pet-paw {
-            width: 9px;
-            height: 6px;
-            background: #93c5fd;
-            border-radius: 3px;
-            animation: pawTyping 0.18s infinite alternate ease-in-out;
-        }
-
-        .pet-paw.right {
-            animation-delay: 0.09s;
-        }
-
-        @keyframes pawTyping {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(3.5px); }
-        }
-
-        /* Хвост с белым кончиком */
-        .pet-tail {
-            position: absolute;
-            bottom: 6px;
-            right: -8px;
-            width: 12px;
-            height: 7px;
-            background: #2563eb;
-            border-radius: 4px;
-            animation: tailWiggle 1.4s ease-in-out infinite alternate;
-        }
-        .pet-tail::after {
-            content: '';
-            position: absolute;
-            top: 1px;
-            right: 1px;
-            width: 4px;
-            height: 5px;
-            background: #93c5fd;
-            border-radius: 2px;
-        }
-
-        @keyframes tailWiggle {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(26deg) translateY(-3px); }
+            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.9));
         }
 
         /* Canvas Confetti */
@@ -716,7 +366,6 @@
                     <div class="dot dot-yellow"></div>
                     <div class="dot dot-green"></div>
                 </div>
-                <!-- Чистый индикатор активного проекта -->
                 <span class="workspace-title" id="project-tag">MULTI-AGENT</span>
             </div>
             <div class="header-right">
@@ -734,62 +383,15 @@
             </div>
         </div>
 
-        <!-- Terminal Stream (идеальное выравнивание по левому краю) -->
+        <!-- Terminal Stream (идеальное выравнивание по левой линии) -->
         <div class="terminal-stream" id="stream-container">
             <!-- Dynamic entries -->
         </div>
 
-        <!-- Высокодетализированный реалистичный кибер-котик -->
+        <!-- Реалистичный пиксельный котик, отрисовываемый пиксель-в-пиксель на канвасе -->
         <div class="pixel-buddy-wrapper">
-            <div class="pet-speech-cloud" id="buddy-speech">coding live... ⚡</div>
-            <div class="pixel-pet">
-                <div class="pet-desk"></div>
-                
-                <!-- Кружка кофе -->
-                <div class="pet-coffee">
-                    <div class="coffee-steam"></div>
-                </div>
-
-                <div class="pet-pc-stand"></div>
-                <div class="pet-pc">
-                    <div class="pet-screen">
-                        <div class="screen-line-1"></div>
-                        <div class="screen-line-2"></div>
-                        <div class="screen-line-3"></div>
-                        <div class="screen-line-4"></div>
-                    </div>
-                </div>
-                <div class="pet-keyboard"></div>
-                
-                <!-- Котик -->
-                <div class="pet-creature">
-                    <div class="pet-tail"></div>
-                    <div class="pet-ear-left"></div>
-                    <div class="pet-ear-right"></div>
-                    
-                    <div class="pet-head">
-                        <div class="pet-face-shadow"></div>
-                        <div class="pet-eyes">
-                            <div class="pet-eye"></div>
-                            <div class="pet-eye"></div>
-                        </div>
-                        <div class="pet-cheeks">
-                            <div class="pet-cheek"></div>
-                            <div class="pet-cheek"></div>
-                        </div>
-                        <div class="pet-muzzle"></div>
-                    </div>
-
-                    <div class="pet-body">
-                        <div class="pet-belly"></div>
-                    </div>
-                    
-                    <div class="pet-paws">
-                        <div class="pet-paw"></div>
-                        <div class="pet-paw right"></div>
-                    </div>
-                </div>
-            </div>
+            <div class="pet-speech-cloud" id="buddy-speech">typing code... ⚡</div>
+            <canvas id="cat-canvas" width="120" height="90"></canvas>
         </div>
 
         <!-- Terminal Footer -->
@@ -837,12 +439,12 @@
                 const div = document.createElement('div');
                 div.className = `log-entry log-${type}`;
 
-                const badgeText = ev.badge || (type === 'user' ? 'USER PROMPT' : 'ACTION');
+                const badgeText = ev.badge || (type === 'user' ? 'USER PROMPT' : 'AGENT ACTION');
                 const isDone = type === 'done';
 
                 div.innerHTML = `
                     <div class="log-meta">
-                        <span class="badge">${badgeText}</span>
+                        <span class="badge badge-${type}">${badgeText}</span>
                         <span class="time-text">${ev.time || ''}</span>
                     </div>
                     <div class="title-text">${isDone ? checkSvg : ''}${escapeHtml(ev.title || '')}</div>
@@ -856,13 +458,12 @@
 
             container.scrollTop = container.scrollHeight;
 
-            // Конфетти при завершении этапа
             if (rawEvents.length > lastEventCount && rawEvents.length > 0) {
                 const latest = rawEvents[rawEvents.length - 1];
                 if (latest.type === 'done') {
                     triggerMiniConfetti();
                     if (buddySpeech) buddySpeech.innerText = 'task completed! 🎉';
-                    setTimeout(() => { if (buddySpeech) buddySpeech.innerText = 'coding live... ⚡'; }, 3500);
+                    setTimeout(() => { if (buddySpeech) buddySpeech.innerText = 'typing code... ⚡'; }, 3500);
                 }
             }
             lastEventCount = rawEvents.length;
@@ -875,6 +476,146 @@
                 .replace(/>/g, '&gt;')
                 .replace(/"/g, '&quot;');
         }
+
+        // ============================================
+        // 16-BIT REALISTIC PIXEL CAT RENDERER
+        // ============================================
+        const catCanvas = document.getElementById('cat-canvas');
+        const catCtx = catCanvas.getContext('2d');
+        catCtx.imageSmoothingEnabled = false;
+
+        let animTick = 0;
+
+        const CAT_FRAMES = [
+            // Frame 0 (Typing left paw down)
+            [
+                "........ssss........ssss........",
+                ".......sppppsssssssspppps.......",
+                ".......sppppsssssssspppps.......",
+                "......ssssssssssssssssssss......",
+                "......ssssssssssssssssssss......",
+                "......ssWWWWssssssssWWWWss......",
+                "......ssWWKKssssssssWWKKss......",
+                "......ssWWCCssssssssWWCCss......",
+                "......ssssssssssnsssssssss......",
+                "......sRRsssssmmmmmssssRRs......",
+                ".......ssssssssssssssssss.......",
+                "........ssssssssssssssss........",
+                ".........ssssssWWssssss.........",
+                ".........sssssWWWWsssss.........",
+                ".........sssssWWWWsssss.tt......",
+                ".......ppsssssWWWWsssssstt......",
+                "......ppppssssWWWWsssssstt......",
+                "......LLLLssssWWWWsssss.tt......",
+                "......LLLLsssssssssssss.tt......",
+                "......LLLL..ssss..ssss..tt......",
+                "......LLLL..ssss..ssss.ttt......",
+                "......................ttt.......",
+            ],
+            // Frame 1 (Typing right paw down)
+            [
+                "........ssss........ssss........",
+                ".......sppppsssssssspppps.......",
+                ".......sppppsssssssspppps.......",
+                "......ssssssssssssssssssss......",
+                "......ssssssssssssssssssss......",
+                "......ssWWWWssssssssWWWWss......",
+                "......ssWWKKssssssssWWKKss......",
+                "......ssWWCCssssssssWWCCss......",
+                "......ssssssssssnsssssssss......",
+                "......sRRsssssmmmmmssssRRs......",
+                ".......ssssssssssssssssss.......",
+                "........ssssssssssssssss........",
+                ".........ssssssWWssssss.........",
+                ".........sssssWWWWsssss.........",
+                ".........sssssWWWWsssss..tt.....",
+                ".........sssssWWWWsssss..tt.....",
+                "......LLLLssssWWWWsssss.tt......",
+                "......LLLLppssWWWWsssss.tt......",
+                "......LLLLppsssssssssss.tt......",
+                "......LLLL..ssss..ssss.ttt......",
+                "............ssss..ssss.ttt......",
+                "................................",
+            ]
+        ];
+
+        const COLOR_PALETTE = {
+            's': '#2563eb', // Rich cat fur (electric blue)
+            'p': '#f472b6', // Pink inner ears
+            'W': '#ffffff', // Eye white / chest bib
+            'K': '#09090b', // Deep pupil
+            'C': '#00d2ff', // Cyan eye highlight
+            'n': '#fda4af', // Cute nose
+            'm': '#1d4ed8', // Dark mouth line
+            'R': '#fb7185', // Rosy blush
+            't': '#1d4ed8', // Tail
+            'L': '#3f3f46', // Laptop body
+        };
+
+        function drawPixelArtCat() {
+            catCtx.clearRect(0, 0, catCanvas.width, catCanvas.height);
+
+            // 1. Draw Wooden Desk
+            catCtx.fillStyle = '#1c1917';
+            catCtx.fillRect(10, 68, 100, 18);
+            catCtx.fillStyle = '#292524';
+            catCtx.fillRect(10, 68, 100, 2);
+
+            // 2. Draw Coffee Mug
+            catCtx.fillStyle = '#f8fafc';
+            catCtx.fillRect(16, 56, 12, 12);
+            catCtx.fillStyle = '#e2e8f0';
+            catCtx.fillRect(28, 59, 4, 6);
+            catCtx.fillStyle = '#451a03';
+            catCtx.fillRect(18, 57, 8, 2);
+
+            // Coffee steam
+            const steamOffset = (animTick % 30) / 10;
+            catCtx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+            catCtx.fillRect(20 + Math.sin(animTick * 0.1) * 2, 50 - steamOffset * 3, 3, 5);
+
+            // 3. Draw Lit Glowing Laptop
+            catCtx.fillStyle = '#27272a';
+            catCtx.fillRect(36, 42, 38, 26);
+            catCtx.fillStyle = '#090d16';
+            catCtx.fillRect(38, 44, 34, 22);
+
+            // Glowing code lines
+            catCtx.fillStyle = '#00d2ff';
+            catCtx.fillRect(40, 46, (animTick % 20 < 10 ? 20 : 14), 2);
+            catCtx.fillStyle = '#10b981';
+            catCtx.fillRect(40, 51, (animTick % 16 < 8 ? 26 : 18), 2);
+            catCtx.fillStyle = '#c084fc';
+            catCtx.fillRect(40, 56, (animTick % 24 < 12 ? 16 : 22), 2);
+            catCtx.fillStyle = '#fbbf24';
+            catCtx.fillRect(40, 61, 24, 2);
+
+            // Screen glow aura
+            catCtx.fillStyle = 'rgba(0, 210, 255, 0.08)';
+            catCtx.fillRect(32, 40, 46, 30);
+
+            // 4. Draw Animated Pixel Cat
+            const frameIndex = Math.floor(animTick / 6) % 2;
+            const matrix = CAT_FRAMES[frameIndex];
+            const startX = 42;
+            const startY = 16 + (Math.floor(animTick / 12) % 2 ? 1 : 0);
+            const scale = 2;
+
+            for (let row = 0; row < matrix.length; row++) {
+                for (let col = 0; col < matrix[row].length; col++) {
+                    const char = matrix[row][col];
+                    if (char !== '.' && COLOR_PALETTE[char]) {
+                        catCtx.fillStyle = COLOR_PALETTE[char];
+                        catCtx.fillRect(startX + col * scale, startY + row * scale, scale, scale);
+                    }
+                }
+            }
+
+            animTick++;
+            requestAnimationFrame(drawPixelArtCat);
+        }
+
+        drawPixelArtCat();
 
         // ============================================
         // Canvas Confetti
