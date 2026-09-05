@@ -3,31 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Streeam — Authentic Deep Black Terminal</title>
+    <title>Streeam — Clean Developer Terminal</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Geist+Mono:wght@300;400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600&display=swap');
 
         :root {
-            /* Чистый глубокий черный цвет терминала */
+            /* Чистый глубокий чёрный фон */
             --bg-term: #000000;
-            --bg-header: #070709;
-            --border-dim: rgba(255, 255, 255, 0.09);
-            --border-subtle: rgba(255, 255, 255, 0.16);
+            --bg-header: #050505;
             
-            /* Насыщенные, сочные акценты */
-            --text-main: #e2e8f0;
+            /* Цвета текста и заливок (БЕЗ ОБВОДОК) */
+            --text-main: #d4d4d8;
             --text-dim: #71717a;
             --text-muted: #52525b;
             
             --user-cyan: #00d2ff;
             --user-bg: rgba(0, 210, 255, 0.08);
-            --user-border: rgba(0, 210, 255, 0.28);
             
             --green-done: #10b981;
-            --amber-action: #f59e0b;
-            --purple-plan: #c084fc;
+            --green-bg: rgba(16, 185, 129, 0.12);
             
-            --font-mono: 'Geist Mono', 'JetBrains Mono', -apple-system, monospace;
+            /* Натуральный пропорциональный шрифт как в интерфейсах macOS/Pi */
+            --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Inter", "Helvetica Neue", sans-serif;
+            --font-code: "SF Mono", Menlo, Monaco, monospace;
         }
 
         * {
@@ -41,31 +39,29 @@
             height: 100%;
             background-color: transparent;
             color: var(--text-main);
-            font-family: var(--font-mono);
+            font-family: var(--font-ui);
             overflow: hidden;
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Pure Deep Black Terminal Frame */
+        /* Никаких жестких обводок, чистый минималистичный блок */
         .terminal-container {
             width: 100%;
             height: 100%;
             display: flex;
             flex-direction: column;
             background: var(--bg-term);
-            border: 1px solid var(--border-dim);
-            border-radius: 8px;
-            box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.95);
+            border-radius: 10px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.95);
             position: relative;
             overflow: hidden;
         }
 
-        /* Top Header */
+        /* Верхняя панель */
         .terminal-header {
             flex-shrink: 0;
             background: var(--bg-header);
-            padding: 10px 16px;
-            border-bottom: 1px solid var(--border-dim);
+            padding: 11px 18px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -84,34 +80,36 @@
         }
 
         .dot {
-            width: 9px;
-            height: 9px;
+            width: 9.5px;
+            height: 9.5px;
             border-radius: 50%;
         }
         .dot-red { background: #ff5f56; }
         .dot-yellow { background: #ffbd2e; }
-        .dot-green { background: #27c93f; box-shadow: 0 0 6px rgba(39, 201, 63, 0.5); }
+        .dot-green { background: #27c93f; }
 
         .terminal-title {
-            font-size: 11.5px;
+            font-size: 12.5px;
             font-weight: 500;
-            letter-spacing: 0.5px;
-            color: #d4d4d8;
+            letter-spacing: -0.1px;
+            color: #e4e4e7;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .prompt-symbol {
             color: #00d2ff;
-            margin-right: 3px;
+            font-weight: 600;
         }
 
         .project-tag {
-            font-size: 10px;
-            font-weight: 600;
-            padding: 1.5px 7px;
-            border-radius: 3px;
+            font-size: 10.5px;
+            font-weight: 500;
+            padding: 2px 7px;
+            border-radius: 4px;
             background: rgba(0, 210, 255, 0.12);
             color: #38bdf8;
-            border: 1px solid rgba(0, 210, 255, 0.25);
             text-transform: uppercase;
         }
 
@@ -124,20 +122,20 @@
         .source-filters {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 4px;
         }
 
         .filter-btn {
             background: transparent;
-            border: 1px solid transparent;
+            border: none;
             color: #71717a;
-            font-family: var(--font-mono);
-            font-size: 10px;
+            font-family: var(--font-ui);
+            font-size: 11px;
             font-weight: 500;
-            padding: 2px 6px;
-            border-radius: 3px;
+            padding: 2px 7px;
+            border-radius: 4px;
             cursor: pointer;
-            transition: all 0.15s ease;
+            transition: all 0.12s ease;
         }
 
         .filter-btn:hover {
@@ -145,7 +143,6 @@
         }
 
         .filter-btn.active {
-            border-color: rgba(255, 255, 255, 0.2);
             color: #ffffff;
             background: rgba(255, 255, 255, 0.08);
         }
@@ -154,9 +151,8 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            padding: 2px 7px;
-            background: rgba(16, 185, 129, 0.15);
-            border: 1px solid rgba(16, 185, 129, 0.35);
+            padding: 2px 8px;
+            background: var(--green-bg);
             border-radius: 12px;
         }
 
@@ -170,10 +166,10 @@
         }
 
         .status-text {
-            font-size: 9.5px;
-            font-weight: 700;
+            font-size: 10px;
+            font-weight: 600;
             color: #34d399;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
         }
 
         @keyframes pulseDot {
@@ -181,28 +177,27 @@
             50% { opacity: 0.6; transform: scale(1.15); }
         }
 
-        /* Stream Output с комфортными большими отступами */
+        /* Лента сообщений: свободные отступы между карточками, плотное аккуратное межстрочное */
         .terminal-stream {
             flex: 1;
-            padding: 18px 20px;
+            padding: 20px 22px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 20px; /* Увеличенный отступ между сообщениями */
+            gap: 22px; /* Просторные комфортные отступы между записями */
             scroll-behavior: smooth;
             scrollbar-width: none;
-            padding-bottom: 95px; /* Запас чтобы текст не перекрывал крупного питомца */
+            padding-bottom: 110px; /* Свободное место для питомца внизу */
         }
 
         .terminal-stream::-webkit-scrollbar {
             display: none;
         }
 
-        /* Чистая терминальная запись */
         .log-entry {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 5px;
             animation: fadeIn 0.16s ease-out;
         }
 
@@ -214,60 +209,58 @@
         .log-meta {
             display: flex;
             align-items: center;
-            gap: 9px;
-            font-size: 10px;
+            gap: 8px;
+            font-size: 11px;
             color: var(--text-dim);
-            font-weight: 400;
         }
 
         .time-text {
             color: #52525b;
-            font-size: 10px;
+            font-size: 10.5px;
+            font-family: var(--font-code);
         }
 
         .badge {
-            font-size: 9.5px;
-            font-weight: 500;
-            letter-spacing: 0.4px;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
             text-transform: uppercase;
-            padding: 1px 5px;
-            border-radius: 2px;
+            padding: 1px 6px;
+            border-radius: 4px;
             background: rgba(255, 255, 255, 0.05);
             color: #a1a1aa;
         }
 
+        /* Плотное, натуральное межстрочное расстояние без моноширинности */
         .title-text {
             font-size: 13.5px;
-            line-height: 1.55;
-            color: #a1a1aa; /* Спокойный терминальный серый для действий агента */
+            line-height: 1.38; /* Аккуратное читабельное межстрочное */
+            color: #a1a1aa;    /* Спокойный терминальный серый */
             font-weight: 400;
-            letter-spacing: -0.1px;
+            letter-spacing: -0.15px;
             word-break: break-word;
         }
 
-        /* Выделенный полупрозрачный User Prompt */
+        /* 1. Сообщение пользователя: ТОЛЬКО мягкая заливка, БЕЗ ОБВОДКИ */
         .log-user {
             background: var(--user-bg);
-            border: 1px solid var(--user-border);
-            border-radius: 6px;
-            padding: 12px 14px;
-            margin: 2px 0;
-            box-shadow: 0 4px 14px rgba(0, 210, 255, 0.05);
+            border-radius: 7px;
+            padding: 12px 16px;
         }
 
         .log-user .badge {
             background: rgba(0, 210, 255, 0.2);
             color: #38bdf8;
-            font-weight: 600;
         }
 
         .log-user .title-text {
             color: #f0f9ff;
-            font-weight: 400;
+            font-weight: 450;
             font-size: 14px;
+            line-height: 1.38;
         }
 
-        /* Завершенный шаг с аккуратной зеленой галочкой */
+        /* 2. Завершенный шаг: чистая зеленая заливка галочки, БЕЗ ОБВОДОК */
         .log-done .title-text {
             color: #6ee7b7;
             display: flex;
@@ -281,20 +274,19 @@
             justify-content: center;
             width: 16px;
             height: 16px;
-            margin-top: 2px;
+            margin-top: 1px;
             flex-shrink: 0;
         }
 
-        /* Footer */
+        /* Нижняя строка */
         .terminal-footer {
             flex-shrink: 0;
-            padding: 8px 16px;
-            background: #050507;
-            border-top: 1px solid var(--border-dim);
+            padding: 8px 18px;
+            background: #030304;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            font-size: 10.5px;
+            font-size: 11px;
             color: #71717a;
         }
 
@@ -311,69 +303,66 @@
         @keyframes blink { 50% { opacity: 0; } }
 
         /* =========================================================
-           DETAILED, CUTE & NOTICEABLY LARGER PIXEL PET (Bottom Right)
+           ВЫСОКОДЕТАЛИЗИРОВАННЫЙ МИЛЫЙ ПИКСЕЛЬНЫЙ ПИТОМЕЦ (Bottom Right)
            ========================================================= */
         .pixel-buddy-wrapper {
             position: absolute;
-            bottom: 30px;
-            right: 18px;
+            bottom: 28px;
+            right: 20px;
             display: flex;
             flex-direction: column;
             align-items: flex-end;
             pointer-events: none;
-            z-index: 20;
-            filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.8));
+            z-index: 30;
         }
 
         .pet-speech-cloud {
-            background: #11141d;
-            border: 1px solid rgba(0, 210, 255, 0.35);
-            border-radius: 5px;
-            padding: 4px 8px;
-            font-size: 9.5px;
+            background: #14161f;
+            border-radius: 6px;
+            padding: 4px 9px;
+            font-size: 10px;
             font-weight: 500;
             color: #38bdf8;
             margin-bottom: 6px;
             white-space: nowrap;
-            animation: petBounce 2.8s ease-in-out infinite;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.7);
+            animation: petBounce 3s ease-in-out infinite;
         }
 
         @keyframes petBounce {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-3px); }
+            50% { transform: translateY(-2.5px); }
         }
 
-        /* Крупный пиксельный питомец: милый кибер-котик/робот за рабочим компом */
+        /* Крупный, высокодетализированный питомец */
         .pixel-pet {
-            width: 82px;
-            height: 68px;
+            width: 100px;
+            height: 80px;
             position: relative;
             image-rendering: pixelated;
         }
 
-        /* Стол / Рабочее место */
+        /* Рабочий стол */
         .pet-desk {
             position: absolute;
             bottom: 0;
             left: 0;
-            width: 82px;
-            height: 14px;
+            width: 100px;
+            height: 16px;
             background: #18181b;
-            border-top: 2px solid #27272a;
-            border-radius: 2px;
+            border-radius: 3px;
         }
 
-        /* Монитор с ярким бегущим кодом */
+        /* Монитор с эффектом свечения */
         .pet-pc {
             position: absolute;
-            bottom: 12px;
-            left: 6px;
-            width: 32px;
-            height: 25px;
+            bottom: 15px;
+            left: 8px;
+            width: 38px;
+            height: 30px;
             background: #27272a;
-            border: 2px solid #3f3f46;
-            border-radius: 3px;
+            border-radius: 4px;
+            box-shadow: 0 0 16px rgba(0, 210, 255, 0.15);
         }
 
         .pet-screen {
@@ -382,206 +371,263 @@
             left: 2px;
             right: 2px;
             bottom: 2px;
-            background: #030712;
+            background: #050811;
+            border-radius: 2px;
             overflow: hidden;
         }
 
         .screen-line-1 {
             position: absolute;
-            top: 2px;
-            left: 2px;
-            width: 14px;
+            top: 3px;
+            left: 3px;
+            width: 18px;
             height: 2px;
             background: #00d2ff;
+            box-shadow: 0 0 4px #00d2ff;
             animation: codeType1 1.2s infinite steps(3);
         }
 
         .screen-line-2 {
             position: absolute;
-            top: 6px;
-            left: 2px;
-            width: 20px;
+            top: 8px;
+            left: 3px;
+            width: 26px;
             height: 2px;
             background: #10b981;
-            animation: codeType2 0.9s infinite steps(4);
+            box-shadow: 0 0 4px #10b981;
+            animation: codeType2 0.85s infinite steps(4);
         }
 
         .screen-line-3 {
             position: absolute;
-            top: 10px;
-            left: 2px;
-            width: 10px;
+            top: 13px;
+            left: 3px;
+            width: 14px;
             height: 2px;
             background: #c084fc;
-            animation: codeType1 1.5s infinite steps(2);
+            box-shadow: 0 0 4px #c084fc;
+            animation: codeType1 1.4s infinite steps(2);
         }
 
-        @keyframes codeType1 { 50% { width: 6px; } }
-        @keyframes codeType2 { 50% { width: 12px; } }
+        .screen-line-4 {
+            position: absolute;
+            top: 18px;
+            left: 3px;
+            width: 20px;
+            height: 2px;
+            background: #f59e0b;
+            box-shadow: 0 0 4px #f59e0b;
+            animation: codeType2 1.1s infinite steps(3);
+        }
+
+        @keyframes codeType1 { 50% { width: 8px; } }
+        @keyframes codeType2 { 50% { width: 15px; } }
 
         .pet-pc-stand {
             position: absolute;
-            bottom: 8px;
-            left: 18px;
-            width: 8px;
-            height: 5px;
+            bottom: 10px;
+            left: 22px;
+            width: 10px;
+            height: 6px;
             background: #3f3f46;
+            border-radius: 1px;
         }
 
-        /* Сам милый пиксельный котик-киборг */
+        /* Милый детализированный кибер-котик */
         .pet-creature {
             position: absolute;
-            bottom: 11px;
+            bottom: 14px;
             right: 8px;
-            width: 36px;
-            height: 38px;
-            animation: creatureBreathe 2.4s ease-in-out infinite;
+            width: 44px;
+            height: 48px;
+            animation: creatureBreathe 2.5s ease-in-out infinite;
         }
 
         @keyframes creatureBreathe {
-            0%, 100% { transform: translateY(0) scaleY(1); }
-            50% { transform: translateY(-1px) scaleY(1.02); }
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-1.5px); }
         }
 
-        /* Ушки котика / рожки */
+        /* Ушки с розовой серединкой */
         .pet-ear-left {
             position: absolute;
             top: 0;
-            left: 4px;
-            width: 8px;
-            height: 8px;
+            left: 5px;
+            width: 11px;
+            height: 11px;
             background: #3b82f6;
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+        }
+        .pet-ear-left::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 2px;
+            width: 7px;
+            height: 7px;
+            background: #f472b6;
             clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
         }
 
         .pet-ear-right {
             position: absolute;
             top: 0;
-            right: 4px;
-            width: 8px;
-            height: 8px;
+            right: 5px;
+            width: 11px;
+            height: 11px;
             background: #3b82f6;
             clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
         }
-
-        /* Голова */
-        .pet-head {
+        .pet-ear-right::after {
+            content: '';
             position: absolute;
-            top: 5px;
-            left: 2px;
-            width: 32px;
-            height: 22px;
-            background: #2563eb;
-            border: 2px solid #1d4ed8;
-            border-radius: 6px;
+            top: 3px;
+            right: 2px;
+            width: 7px;
+            height: 7px;
+            background: #f472b6;
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
         }
 
-        /* Большие милые блестящие аниме-глазки */
+        /* Голова котика */
+        .pet-head {
+            position: absolute;
+            top: 7px;
+            left: 3px;
+            width: 38px;
+            height: 27px;
+            background: #2563eb;
+            border-radius: 7px;
+        }
+
+        /* Большие выразительные глаза */
         .pet-eyes {
             position: absolute;
-            top: 5px;
-            left: 5px;
-            right: 5px;
+            top: 6px;
+            left: 6px;
+            right: 6px;
             display: flex;
             justify-content: space-between;
         }
 
         .pet-eye {
-            width: 7px;
-            height: 8px;
+            width: 8.5px;
+            height: 10px;
             background: #020617;
-            border-radius: 2px;
+            border-radius: 3px;
             position: relative;
-            animation: petBlink 4s infinite;
+            animation: petBlink 3.8s infinite;
+        }
+
+        .pet-eye::before {
+            content: '';
+            position: absolute;
+            top: 1px;
+            left: 1px;
+            width: 4px;
+            height: 4px;
+            background: #ffffff;
+            border-radius: 2px;
         }
 
         .pet-eye::after {
             content: '';
             position: absolute;
-            top: 1px;
-            left: 1px;
-            width: 3px;
-            height: 3px;
-            background: #ffffff;
-            border-radius: 1px;
+            bottom: 1.5px;
+            right: 1.5px;
+            width: 2px;
+            height: 2px;
+            background: #38bdf8;
+            border-radius: 50%;
         }
 
         @keyframes petBlink {
-            0%, 95%, 100% { transform: scaleY(1); }
-            97.5% { transform: scaleY(0.1); }
+            0%, 94%, 100% { transform: scaleY(1); }
+            97% { transform: scaleY(0.1); }
         }
 
-        /* Милые румяные щечки */
+        /* Румяные щёчки */
         .pet-cheeks {
             position: absolute;
-            bottom: 2px;
-            left: 3px;
-            right: 3px;
+            bottom: 3px;
+            left: 4px;
+            right: 4px;
             display: flex;
             justify-content: space-between;
         }
 
         .pet-cheek {
-            width: 5px;
-            height: 3px;
+            width: 6px;
+            height: 4px;
             background: #f472b6;
             border-radius: 2px;
-            opacity: 0.8;
+            opacity: 0.85;
         }
 
-        /* Тело */
+        /* Маленький носик */
+        .pet-nose {
+            position: absolute;
+            bottom: 7px;
+            left: 17px;
+            width: 4px;
+            height: 2.5px;
+            background: #fbcfe8;
+            border-radius: 2px;
+        }
+
+        /* Тельце */
         .pet-body {
             position: absolute;
             bottom: 0;
-            left: 5px;
-            width: 26px;
-            height: 15px;
+            left: 7px;
+            width: 30px;
+            height: 19px;
             background: #1d4ed8;
-            border-radius: 4px;
+            border-radius: 6px;
         }
 
-        /* Лапки печатают по столу/клавиатуре */
+        /* Лапки печатают */
         .pet-paws {
             position: absolute;
             bottom: 2px;
-            left: -3px;
+            left: -4px;
             display: flex;
-            gap: 8px;
+            gap: 10px;
             z-index: 5;
         }
 
         .pet-paw {
-            width: 7px;
-            height: 5px;
+            width: 8px;
+            height: 6px;
             background: #60a5fa;
-            border-radius: 2px;
-            animation: pawTyping 0.22s infinite alternate ease-in-out;
+            border-radius: 3px;
+            animation: pawTyping 0.2s infinite alternate ease-in-out;
         }
 
         .pet-paw.right {
-            animation-delay: 0.11s;
+            animation-delay: 0.1s;
         }
 
         @keyframes pawTyping {
-            0% { transform: translateY(0) rotate(-5deg); }
-            100% { transform: translateY(2.5px) rotate(8deg); }
+            0% { transform: translateY(0); }
+            100% { transform: translateY(3px); }
         }
 
-        /* Хвостик виляет сзади */
+        /* Хвост */
         .pet-tail {
             position: absolute;
-            bottom: 4px;
-            right: -5px;
-            width: 8px;
-            height: 5px;
+            bottom: 5px;
+            right: -7px;
+            width: 10px;
+            height: 6px;
             background: #3b82f6;
-            border-radius: 3px;
-            animation: tailWiggle 1.5s ease-in-out infinite alternate;
+            border-radius: 4px;
+            animation: tailWiggle 1.4s ease-in-out infinite alternate;
         }
 
         @keyframes tailWiggle {
             0% { transform: rotate(0deg); }
-            100% { transform: rotate(20deg) translateY(-2px); }
+            100% { transform: rotate(24deg) translateY(-3px); }
         }
 
         /* Canvas Confetti */
@@ -627,14 +673,14 @@
             </div>
         </div>
 
-        <!-- Terminal Output Stream -->
+        <!-- Terminal Stream -->
         <div class="terminal-stream" id="stream-container">
             <!-- Dynamic entries -->
         </div>
 
-        <!-- Detailed, Cute Animated Pixel Pet in Bottom Right Corner -->
+        <!-- Highly detailed animated pixel pet -->
         <div class="pixel-buddy-wrapper">
-            <div class="pet-speech-cloud" id="buddy-speech">typing code... ⚡</div>
+            <div class="pet-speech-cloud" id="buddy-speech">coding live... ⚡</div>
             <div class="pixel-pet">
                 <div class="pet-desk"></div>
                 <div class="pet-pc-stand"></div>
@@ -643,6 +689,7 @@
                         <div class="screen-line-1"></div>
                         <div class="screen-line-2"></div>
                         <div class="screen-line-3"></div>
+                        <div class="screen-line-4"></div>
                     </div>
                 </div>
                 
@@ -659,6 +706,7 @@
                             <div class="pet-cheek"></div>
                             <div class="pet-cheek"></div>
                         </div>
+                        <div class="pet-nose"></div>
                     </div>
                     <div class="pet-body"></div>
                     <div class="pet-paws">
@@ -686,11 +734,11 @@
         const footerCount = document.getElementById('footer-count');
         const buddySpeech = document.getElementById('buddy-speech');
 
-        // Минималистичная векторная SVG галочка
+        // Минималистичная SVG галочка с мягкой заливкой БЕЗ обводки
         const checkSvg = `
             <svg class="check-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="8" cy="8" r="7" stroke="#10b981" stroke-width="1.4" fill="rgba(16, 185, 129, 0.15)"/>
-                <path d="M4.8 8.2L6.9 10.3L11.2 5.8" stroke="#10b981" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="8" cy="8" r="8" fill="rgba(16, 185, 129, 0.2)"/>
+                <path d="M4.8 8.2L6.9 10.3L11.2 5.8" stroke="#10b981" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
         `;
 
@@ -733,13 +781,13 @@
 
             container.scrollTop = container.scrollHeight;
 
-            // Триггер праздничных конфетти при завершении шага
+            // Конфетти при завершении этапа
             if (rawEvents.length > lastEventCount && rawEvents.length > 0) {
                 const latest = rawEvents[rawEvents.length - 1];
                 if (latest.type === 'done') {
                     triggerMiniConfetti();
-                    if (buddySpeech) buddySpeech.innerText = 'milestone done! 🎉';
-                    setTimeout(() => { if (buddySpeech) buddySpeech.innerText = 'typing code... ⚡'; }, 3500);
+                    if (buddySpeech) buddySpeech.innerText = 'task completed! 🎉';
+                    setTimeout(() => { if (buddySpeech) buddySpeech.innerText = 'coding live... ⚡'; }, 3500);
                 }
             }
             lastEventCount = rawEvents.length;
