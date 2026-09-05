@@ -3,23 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Streeam — Authentic Dev Terminal</title>
+    <title>Streeam — Authentic Deep Black Terminal</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Geist+Mono:wght@300;400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Geist+Mono:wght@300;400;500;600&display=swap');
 
         :root {
-            --bg-term: #0b0d13;
-            --bg-header: #0f121b;
-            --border-dim: rgba(255, 255, 255, 0.07);
-            --border-subtle: rgba(255, 255, 255, 0.12);
-            --text-main: #d1d5db;        /* Natural readable light gray */
-            --text-dim: #6b7280;         /* Classic terminal muted gray */
-            --text-dark: #4b5563;
-            --user-cyan: #38bdf8;
-            --user-bg: rgba(56, 189, 248, 0.06);
-            --user-border: rgba(56, 189, 248, 0.18);
-            --green-done: #34d399;
-            --font-mono: 'Geist Mono', 'JetBrains Mono', -apple-system, BlinkMacSystemFont, monospace;
+            /* Чистый глубокий черный цвет терминала */
+            --bg-term: #000000;
+            --bg-header: #070709;
+            --border-dim: rgba(255, 255, 255, 0.09);
+            --border-subtle: rgba(255, 255, 255, 0.16);
+            
+            /* Насыщенные, сочные акценты */
+            --text-main: #e2e8f0;
+            --text-dim: #71717a;
+            --text-muted: #52525b;
+            
+            --user-cyan: #00d2ff;
+            --user-bg: rgba(0, 210, 255, 0.08);
+            --user-border: rgba(0, 210, 255, 0.28);
+            
+            --green-done: #10b981;
+            --amber-action: #f59e0b;
+            --purple-plan: #c084fc;
+            
+            --font-mono: 'Geist Mono', 'JetBrains Mono', -apple-system, monospace;
         }
 
         * {
@@ -38,7 +46,7 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Strict Authentic Terminal Frame */
+        /* Pure Deep Black Terminal Frame */
         .terminal-container {
             width: 100%;
             height: 100%;
@@ -47,16 +55,16 @@
             background: var(--bg-term);
             border: 1px solid var(--border-dim);
             border-radius: 8px;
-            box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.85);
+            box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.95);
             position: relative;
             overflow: hidden;
         }
 
-        /* Terminal Window Bar */
+        /* Top Header */
         .terminal-header {
             flex-shrink: 0;
             background: var(--bg-header);
-            padding: 9px 14px;
+            padding: 10px 16px;
             border-bottom: 1px solid var(--border-dim);
             display: flex;
             align-items: center;
@@ -72,75 +80,84 @@
         .window-dots {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 6.5px;
         }
 
         .dot {
-            width: 8.5px;
-            height: 8.5px;
+            width: 9px;
+            height: 9px;
             border-radius: 50%;
-            opacity: 0.85;
         }
-        .dot-red { background: #e06c75; }
-        .dot-yellow { background: #e5c07b; }
-        .dot-green { background: #98c379; }
+        .dot-red { background: #ff5f56; }
+        .dot-yellow { background: #ffbd2e; }
+        .dot-green { background: #27c93f; box-shadow: 0 0 6px rgba(39, 201, 63, 0.5); }
 
         .terminal-title {
-            font-size: 11px;
+            font-size: 11.5px;
             font-weight: 500;
             letter-spacing: 0.5px;
-            color: #9ca3af;
+            color: #d4d4d8;
         }
 
         .prompt-symbol {
-            color: var(--text-dim);
-            margin-right: 2px;
+            color: #00d2ff;
+            margin-right: 3px;
         }
 
         .project-tag {
             font-size: 10px;
-            font-weight: 500;
-            padding: 1px 6px;
+            font-weight: 600;
+            padding: 1.5px 7px;
             border-radius: 3px;
-            background: rgba(255, 255, 255, 0.05);
-            color: #9ca3af;
-            border: 1px solid var(--border-dim);
+            background: rgba(0, 210, 255, 0.12);
+            color: #38bdf8;
+            border: 1px solid rgba(0, 210, 255, 0.25);
             text-transform: uppercase;
         }
 
         .header-right {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
         .source-filters {
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 5px;
         }
 
         .filter-btn {
             background: transparent;
             border: 1px solid transparent;
-            color: #6b7280;
+            color: #71717a;
             font-family: var(--font-mono);
-            font-size: 9.5px;
-            font-weight: 400;
-            padding: 1.5px 5px;
+            font-size: 10px;
+            font-weight: 500;
+            padding: 2px 6px;
             border-radius: 3px;
             cursor: pointer;
-            transition: all 0.12s ease;
+            transition: all 0.15s ease;
         }
 
         .filter-btn:hover {
-            color: #d1d5db;
+            color: #f4f4f5;
         }
 
         .filter-btn.active {
-            border-color: rgba(255, 255, 255, 0.15);
-            color: #f3f4f6;
-            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 2px 7px;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            border-radius: 12px;
         }
 
         .status-dot {
@@ -149,129 +166,143 @@
             border-radius: 50%;
             background: #10b981;
             box-shadow: 0 0 6px #10b981;
+            animation: pulseDot 2s infinite;
         }
 
-        /* Stream Output */
+        .status-text {
+            font-size: 9.5px;
+            font-weight: 700;
+            color: #34d399;
+            letter-spacing: 0.5px;
+        }
+
+        @keyframes pulseDot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.15); }
+        }
+
+        /* Stream Output с комфортными большими отступами */
         .terminal-stream {
             flex: 1;
-            padding: 14px 16px;
+            padding: 18px 20px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 20px; /* Увеличенный отступ между сообщениями */
             scroll-behavior: smooth;
             scrollbar-width: none;
-            padding-bottom: 60px; /* Space so text doesn't hide behind pixel buddy */
+            padding-bottom: 95px; /* Запас чтобы текст не перекрывал крупного питомца */
         }
 
         .terminal-stream::-webkit-scrollbar {
             display: none;
         }
 
-        /* Clean Terminal Log Rows (NO colorful side stripes) */
+        /* Чистая терминальная запись */
         .log-entry {
             display: flex;
             flex-direction: column;
-            gap: 3px;
-            padding: 3px 0;
-            animation: fadeIn 0.15s ease-out;
+            gap: 6px;
+            animation: fadeIn 0.16s ease-out;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(3px); }
+            from { opacity: 0; transform: translateY(4px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         .log-meta {
             display: flex;
             align-items: center;
-            gap: 7px;
+            gap: 9px;
             font-size: 10px;
             color: var(--text-dim);
             font-weight: 400;
         }
 
         .time-text {
-            color: #4b5563;
-            font-size: 9.5px;
+            color: #52525b;
+            font-size: 10px;
         }
 
         .badge {
             font-size: 9.5px;
             font-weight: 500;
-            letter-spacing: 0.3px;
+            letter-spacing: 0.4px;
             text-transform: uppercase;
-            padding: 0 4px;
+            padding: 1px 5px;
             border-radius: 2px;
-            background: rgba(255, 255, 255, 0.04);
-            color: #9ca3af;
+            background: rgba(255, 255, 255, 0.05);
+            color: #a1a1aa;
         }
 
         .title-text {
-            font-size: 12.5px;
-            line-height: 1.45;
-            color: #9ca3af; /* Clean quiet terminal gray by default */
+            font-size: 13.5px;
+            line-height: 1.55;
+            color: #a1a1aa; /* Спокойный терминальный серый для действий агента */
             font-weight: 400;
             letter-spacing: -0.1px;
             word-break: break-word;
         }
 
-        /* 1. Distinct Translucent User Prompt */
+        /* Выделенный полупрозрачный User Prompt */
         .log-user {
             background: var(--user-bg);
             border: 1px solid var(--user-border);
-            border-radius: 4px;
-            padding: 7px 10px;
-            margin: 3px 0;
+            border-radius: 6px;
+            padding: 12px 14px;
+            margin: 2px 0;
+            box-shadow: 0 4px 14px rgba(0, 210, 255, 0.05);
         }
 
         .log-user .badge {
-            background: rgba(56, 189, 248, 0.15);
-            color: var(--user-cyan);
+            background: rgba(0, 210, 255, 0.2);
+            color: #38bdf8;
+            font-weight: 600;
         }
 
         .log-user .title-text {
-            color: #e0f2fe;
+            color: #f0f9ff;
             font-weight: 400;
+            font-size: 14px;
         }
 
-        /* 2. Completed Step with Clean Checkmark */
+        /* Завершенный шаг с аккуратной зеленой галочкой */
         .log-done .title-text {
-            color: #a7f3d0;
+            color: #6ee7b7;
             display: flex;
             align-items: flex-start;
-            gap: 6px;
+            gap: 8px;
         }
 
         .check-icon {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 14px;
-            height: 14px;
+            width: 16px;
+            height: 16px;
             margin-top: 2px;
             flex-shrink: 0;
-            color: var(--green-done);
         }
 
-        /* Terminal Footer */
+        /* Footer */
         .terminal-footer {
             flex-shrink: 0;
-            padding: 6px 14px;
-            background: #0d1017;
+            padding: 8px 16px;
+            background: #050507;
             border-top: 1px solid var(--border-dim);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            font-size: 10px;
-            color: #6b7280;
+            font-size: 10.5px;
+            color: #71717a;
         }
 
         .cursor {
             display: inline-block;
-            width: 6px;
-            height: 12px;
-            background: #9ca3af;
+            width: 7px;
+            height: 13px;
+            background: #a1a1aa;
             vertical-align: middle;
             margin-left: 4px;
             animation: blink 1s step-start infinite;
@@ -279,175 +310,281 @@
 
         @keyframes blink { 50% { opacity: 0; } }
 
-        /* ====================================================
-           PIXEL PET / CODING ROBOT BUDDY (Bottom Right Corner)
-           ==================================================== */
-        .pixel-buddy-container {
+        /* =========================================================
+           DETAILED, CUTE & NOTICEABLY LARGER PIXEL PET (Bottom Right)
+           ========================================================= */
+        .pixel-buddy-wrapper {
             position: absolute;
             bottom: 30px;
-            right: 14px;
+            right: 18px;
             display: flex;
             flex-direction: column;
             align-items: flex-end;
             pointer-events: none;
-            z-index: 10;
+            z-index: 20;
+            filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.8));
         }
 
-        .pixel-speech {
-            background: #1e2433;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 4px;
-            padding: 3px 6px;
-            font-size: 8.5px;
-            color: #93c5fd;
-            margin-bottom: 3px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-            animation: floatBubble 2.5s ease-in-out infinite;
+        .pet-speech-cloud {
+            background: #11141d;
+            border: 1px solid rgba(0, 210, 255, 0.35);
+            border-radius: 5px;
+            padding: 4px 8px;
+            font-size: 9.5px;
+            font-weight: 500;
+            color: #38bdf8;
+            margin-bottom: 6px;
             white-space: nowrap;
+            animation: petBounce 2.8s ease-in-out infinite;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
         }
 
-        @keyframes floatBubble {
+        @keyframes petBounce {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-2px); }
+            50% { transform: translateY(-3px); }
         }
 
-        /* Pure CSS Pixel Robot Canvas */
-        .pixel-robot {
-            width: 44px;
-            height: 40px;
+        /* Крупный пиксельный питомец: милый кибер-котик/робот за рабочим компом */
+        .pixel-pet {
+            width: 82px;
+            height: 68px;
             position: relative;
             image-rendering: pixelated;
         }
 
-        /* Monitor / Screen */
-        .robot-monitor {
+        /* Стол / Рабочее место */
+        .pet-desk {
             position: absolute;
             bottom: 0;
-            left: 2px;
-            width: 18px;
+            left: 0;
+            width: 82px;
             height: 14px;
-            background: #1f293d;
-            border: 1px solid #374151;
+            background: #18181b;
+            border-top: 2px solid #27272a;
             border-radius: 2px;
         }
-        .monitor-screen {
+
+        /* Монитор с ярким бегущим кодом */
+        .pet-pc {
+            position: absolute;
+            bottom: 12px;
+            left: 6px;
+            width: 32px;
+            height: 25px;
+            background: #27272a;
+            border: 2px solid #3f3f46;
+            border-radius: 3px;
+        }
+
+        .pet-screen {
             position: absolute;
             top: 2px;
             left: 2px;
             right: 2px;
             bottom: 2px;
-            background: #0f172a;
+            background: #030712;
             overflow: hidden;
         }
-        .monitor-code {
+
+        .screen-line-1 {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 14px;
+            height: 2px;
+            background: #00d2ff;
+            animation: codeType1 1.2s infinite steps(3);
+        }
+
+        .screen-line-2 {
+            position: absolute;
+            top: 6px;
+            left: 2px;
+            width: 20px;
+            height: 2px;
+            background: #10b981;
+            animation: codeType2 0.9s infinite steps(4);
+        }
+
+        .screen-line-3 {
+            position: absolute;
+            top: 10px;
+            left: 2px;
+            width: 10px;
+            height: 2px;
+            background: #c084fc;
+            animation: codeType1 1.5s infinite steps(2);
+        }
+
+        @keyframes codeType1 { 50% { width: 6px; } }
+        @keyframes codeType2 { 50% { width: 12px; } }
+
+        .pet-pc-stand {
+            position: absolute;
+            bottom: 8px;
+            left: 18px;
+            width: 8px;
+            height: 5px;
+            background: #3f3f46;
+        }
+
+        /* Сам милый пиксельный котик-киборг */
+        .pet-creature {
+            position: absolute;
+            bottom: 11px;
+            right: 8px;
+            width: 36px;
+            height: 38px;
+            animation: creatureBreathe 2.4s ease-in-out infinite;
+        }
+
+        @keyframes creatureBreathe {
+            0%, 100% { transform: translateY(0) scaleY(1); }
+            50% { transform: translateY(-1px) scaleY(1.02); }
+        }
+
+        /* Ушки котика / рожки */
+        .pet-ear-left {
+            position: absolute;
+            top: 0;
+            left: 4px;
+            width: 8px;
+            height: 8px;
+            background: #3b82f6;
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+        }
+
+        .pet-ear-right {
+            position: absolute;
+            top: 0;
+            right: 4px;
+            width: 8px;
+            height: 8px;
+            background: #3b82f6;
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+        }
+
+        /* Голова */
+        .pet-head {
+            position: absolute;
+            top: 5px;
+            left: 2px;
+            width: 32px;
+            height: 22px;
+            background: #2563eb;
+            border: 2px solid #1d4ed8;
+            border-radius: 6px;
+        }
+
+        /* Большие милые блестящие аниме-глазки */
+        .pet-eyes {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            right: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .pet-eye {
+            width: 7px;
+            height: 8px;
+            background: #020617;
+            border-radius: 2px;
+            position: relative;
+            animation: petBlink 4s infinite;
+        }
+
+        .pet-eye::after {
+            content: '';
             position: absolute;
             top: 1px;
             left: 1px;
-            width: 6px;
-            height: 1.5px;
-            background: #38bdf8;
-            box-shadow: 0 2.5px 0 #34d399, 0 5px 0 #a78bfa;
-            animation: typingCode 0.8s infinite steps(2);
-        }
-
-        @keyframes typingCode {
-            50% { width: 10px; }
-        }
-
-        /* Robot Body & Head */
-        .robot-head {
-            position: absolute;
-            bottom: 12px;
-            right: 6px;
-            width: 18px;
-            height: 15px;
-            background: #334155;
-            border: 1px solid #475569;
-            border-radius: 3px;
-            animation: bobHead 1.4s ease-in-out infinite;
-        }
-
-        .robot-antenna {
-            position: absolute;
-            top: -5px;
-            left: 7px;
-            width: 2px;
-            height: 4px;
-            background: #64748b;
-        }
-        .robot-antenna::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -1px;
-            width: 4px;
-            height: 4px;
-            border-radius: 50%;
-            background: #38bdf8;
-            box-shadow: 0 0 5px #38bdf8;
-            animation: antennaGlow 1.2s infinite;
-        }
-
-        @keyframes antennaGlow {
-            50% { background: #34d399; box-shadow: 0 0 7px #34d399; }
-        }
-
-        .robot-eyes {
-            position: absolute;
-            top: 4px;
-            left: 3px;
-            display: flex;
-            gap: 4px;
-        }
-
-        .robot-eye {
             width: 3px;
             height: 3px;
-            background: #38bdf8;
+            background: #ffffff;
             border-radius: 1px;
-            box-shadow: 0 0 3px #38bdf8;
-            animation: blinkEyes 3.5s infinite;
         }
 
-        @keyframes blinkEyes {
-            0%, 96%, 100% { transform: scaleY(1); }
-            98% { transform: scaleY(0.1); }
+        @keyframes petBlink {
+            0%, 95%, 100% { transform: scaleY(1); }
+            97.5% { transform: scaleY(0.1); }
         }
 
-        /* Robot Body & Typing Hands */
-        .robot-body {
+        /* Милые румяные щечки */
+        .pet-cheeks {
+            position: absolute;
+            bottom: 2px;
+            left: 3px;
+            right: 3px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .pet-cheek {
+            width: 5px;
+            height: 3px;
+            background: #f472b6;
+            border-radius: 2px;
+            opacity: 0.8;
+        }
+
+        /* Тело */
+        .pet-body {
             position: absolute;
             bottom: 0;
-            right: 8px;
-            width: 14px;
-            height: 12px;
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 2px;
+            left: 5px;
+            width: 26px;
+            height: 15px;
+            background: #1d4ed8;
+            border-radius: 4px;
         }
 
-        .robot-arm {
+        /* Лапки печатают по столу/клавиатуре */
+        .pet-paws {
+            position: absolute;
+            bottom: 2px;
+            left: -3px;
+            display: flex;
+            gap: 8px;
+            z-index: 5;
+        }
+
+        .pet-paw {
+            width: 7px;
+            height: 5px;
+            background: #60a5fa;
+            border-radius: 2px;
+            animation: pawTyping 0.22s infinite alternate ease-in-out;
+        }
+
+        .pet-paw.right {
+            animation-delay: 0.11s;
+        }
+
+        @keyframes pawTyping {
+            0% { transform: translateY(0) rotate(-5deg); }
+            100% { transform: translateY(2.5px) rotate(8deg); }
+        }
+
+        /* Хвостик виляет сзади */
+        .pet-tail {
             position: absolute;
             bottom: 4px;
-            left: 17px;
+            right: -5px;
             width: 8px;
-            height: 3px;
-            background: #475569;
-            border-radius: 1px;
-            animation: typingHand 0.25s infinite alternate ease-in-out;
+            height: 5px;
+            background: #3b82f6;
+            border-radius: 3px;
+            animation: tailWiggle 1.5s ease-in-out infinite alternate;
         }
 
-        @keyframes typingHand {
-            0% { transform: rotate(-8deg) translateY(0); }
-            100% { transform: rotate(12deg) translateY(2px); }
+        @keyframes tailWiggle {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(20deg) translateY(-2px); }
         }
 
-        @keyframes bobHead {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-1.5px); }
-        }
-
-        /* Confetti Canvas */
+        /* Canvas Confetti */
         #confetti-canvas {
             position: absolute;
             top: 0;
@@ -464,7 +601,7 @@
         <!-- Confetti layer for milestone celebration -->
         <canvas id="confetti-canvas"></canvas>
 
-        <!-- Terminal Topbar -->
+        <!-- Header -->
         <div class="terminal-header">
             <div class="header-left">
                 <div class="window-dots">
@@ -483,7 +620,10 @@
                     <button class="filter-btn" onclick="setFilter('codex')">codex</button>
                     <button class="filter-btn" onclick="setFilter('tmux')">tmux</button>
                 </div>
-                <div class="status-dot" title="Stream Active"></div>
+                <div class="status-pill">
+                    <span class="status-dot"></span>
+                    <span class="status-text">LIVE</span>
+                </div>
             </div>
         </div>
 
@@ -492,22 +632,38 @@
             <!-- Dynamic entries -->
         </div>
 
-        <!-- Animated Pixel Robot Buddy in bottom right corner -->
-        <div class="pixel-buddy-container">
-            <div class="pixel-speech" id="buddy-speech">coding...</div>
-            <div class="pixel-robot">
-                <div class="robot-monitor">
-                    <div class="monitor-screen">
-                        <div class="monitor-code"></div>
+        <!-- Detailed, Cute Animated Pixel Pet in Bottom Right Corner -->
+        <div class="pixel-buddy-wrapper">
+            <div class="pet-speech-cloud" id="buddy-speech">typing code... ⚡</div>
+            <div class="pixel-pet">
+                <div class="pet-desk"></div>
+                <div class="pet-pc-stand"></div>
+                <div class="pet-pc">
+                    <div class="pet-screen">
+                        <div class="screen-line-1"></div>
+                        <div class="screen-line-2"></div>
+                        <div class="screen-line-3"></div>
                     </div>
                 </div>
-                <div class="robot-body"></div>
-                <div class="robot-arm"></div>
-                <div class="robot-head">
-                    <div class="robot-antenna"></div>
-                    <div class="robot-eyes">
-                        <div class="robot-eye"></div>
-                        <div class="robot-eye"></div>
+                
+                <div class="pet-creature">
+                    <div class="pet-tail"></div>
+                    <div class="pet-ear-left"></div>
+                    <div class="pet-ear-right"></div>
+                    <div class="pet-head">
+                        <div class="pet-eyes">
+                            <div class="pet-eye"></div>
+                            <div class="pet-eye"></div>
+                        </div>
+                        <div class="pet-cheeks">
+                            <div class="pet-cheek"></div>
+                            <div class="pet-cheek"></div>
+                        </div>
+                    </div>
+                    <div class="pet-body"></div>
+                    <div class="pet-paws">
+                        <div class="pet-paw"></div>
+                        <div class="pet-paw right"></div>
                     </div>
                 </div>
             </div>
@@ -515,7 +671,7 @@
 
         <!-- Terminal Footer -->
         <div class="terminal-footer">
-            <span id="footer-count">● 0 events recorded</span>
+            <span id="footer-count">● 0 entries logged</span>
             <span>ready <span class="cursor"></span></span>
         </div>
     </div>
@@ -530,11 +686,11 @@
         const footerCount = document.getElementById('footer-count');
         const buddySpeech = document.getElementById('buddy-speech');
 
-        // Elegant SVG Checkmark (never ugly default emojis)
+        // Минималистичная векторная SVG галочка
         const checkSvg = `
             <svg class="check-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="8" cy="8" r="7" stroke="#10b981" stroke-width="1.3" fill="rgba(16, 185, 129, 0.1)"/>
-                <path d="M4.8 8.2L6.9 10.3L11.2 5.8" stroke="#10b981" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="8" cy="8" r="7" stroke="#10b981" stroke-width="1.4" fill="rgba(16, 185, 129, 0.15)"/>
+                <path d="M4.8 8.2L6.9 10.3L11.2 5.8" stroke="#10b981" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
         `;
 
@@ -558,7 +714,7 @@
                 const div = document.createElement('div');
                 div.className = `log-entry log-${type}`;
 
-                const badgeText = ev.badge || (type === 'user' ? 'PROMPT' : 'ACTION');
+                const badgeText = ev.badge || (type === 'user' ? 'USER PROMPT' : 'ACTION');
                 const isDone = type === 'done';
 
                 div.innerHTML = `
@@ -577,13 +733,13 @@
 
             container.scrollTop = container.scrollHeight;
 
-            // Check if latest event is done -> trigger micro confetti celebration
+            // Триггер праздничных конфетти при завершении шага
             if (rawEvents.length > lastEventCount && rawEvents.length > 0) {
                 const latest = rawEvents[rawEvents.length - 1];
                 if (latest.type === 'done') {
                     triggerMiniConfetti();
-                    if (buddySpeech) buddySpeech.innerText = 'milestone reached! ✨';
-                    setTimeout(() => { if (buddySpeech) buddySpeech.innerText = 'coding...'; }, 3500);
+                    if (buddySpeech) buddySpeech.innerText = 'milestone done! 🎉';
+                    setTimeout(() => { if (buddySpeech) buddySpeech.innerText = 'typing code... ⚡'; }, 3500);
                 }
             }
             lastEventCount = rawEvents.length;
@@ -598,7 +754,7 @@
         }
 
         // ============================================
-        // Subtle Tasteful Canvas Confetti
+        // Canvas Confetti
         // ============================================
         const canvas = document.getElementById('confetti-canvas');
         const ctx = canvas.getContext('2d');
@@ -612,20 +768,20 @@
         resizeCanvas();
 
         function triggerMiniConfetti() {
-            const colors = ['#38bdf8', '#34d399', '#a78bfa', '#facc15', '#f472b6'];
-            for (let i = 0; i < 28; i++) {
+            const colors = ['#00d2ff', '#10b981', '#c084fc', '#f59e0b', '#f472b6'];
+            for (let i = 0; i < 35; i++) {
                 particles.push({
-                    x: canvas.width / 2 + (Math.random() * 80 - 40),
-                    y: canvas.height * 0.4 + (Math.random() * 40 - 20),
-                    vx: (Math.random() - 0.5) * 4.5,
-                    vy: (Math.random() - 1.2) * 4,
+                    x: canvas.width / 2 + (Math.random() * 90 - 45),
+                    y: canvas.height * 0.35 + (Math.random() * 40 - 20),
+                    vx: (Math.random() - 0.5) * 5,
+                    vy: (Math.random() - 1.2) * 4.5,
                     size: Math.random() * 3.5 + 2,
                     color: colors[Math.floor(Math.random() * colors.length)],
                     alpha: 1,
-                    decay: Math.random() * 0.02 + 0.015,
+                    decay: Math.random() * 0.02 + 0.012,
                 });
             }
-            if (particles.length <= 28) animateConfetti();
+            if (particles.length <= 35) animateConfetti();
         }
 
         function animateConfetti() {
@@ -633,7 +789,7 @@
             particles.forEach((p, idx) => {
                 p.x += p.vx;
                 p.y += p.vy;
-                p.vy += 0.08; // gravity
+                p.vy += 0.08;
                 p.alpha -= p.decay;
 
                 if (p.alpha <= 0) {
