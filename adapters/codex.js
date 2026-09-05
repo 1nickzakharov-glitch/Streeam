@@ -116,7 +116,13 @@ class CodexAdapter extends BaseAdapter {
 
   findRecentSessionFiles() {
     const sessionsDir = path.join(this.codexRoot, 'sessions');
-    if (!fs.existsSync(sessionsDir)) return [];
+    if (!fs.existsSync(sessionsDir)) {
+      // Also check root if sessions dir is not separate
+      if (fs.existsSync(this.codexRoot)) {
+        return [];
+      }
+      return [];
+    }
     const files = [];
 
     const walk = (dir, depth = 0) => {
@@ -164,7 +170,7 @@ class CodexAdapter extends BaseAdapter {
     await super.start();
     const recent = this.findRecentSessionFiles();
     for (const sess of recent) {
-      await this.backfillSession(sess);
+      this.watchedOffsets.set(sess.path, sess.size);
     }
 
     this.timer = setInterval(async () => {

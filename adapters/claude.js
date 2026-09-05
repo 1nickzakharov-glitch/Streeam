@@ -166,7 +166,7 @@ class ClaudeAdapter extends BaseAdapter {
     await super.start();
     const recent = this.findRecentSessionFiles();
     for (const sess of recent) {
-      await this.backfillSession(sess);
+      this.watchedOffsets.set(sess.path, sess.size);
     }
 
     this.timer = setInterval(async () => {
