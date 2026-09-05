@@ -8,7 +8,7 @@
 
 ![Streeam Banner](public/streeam-hud-preview.png)
 
-[![Release: v1.2.0](https://img.shields.io/badge/Streeam-v1.2.0-38bdf8?style=for-the-badge&logo=twitch&logoColor=white)](https://github.com/1nickzakharov-glitch/stream-overlay)
+[![Release: v1.2.0](https://img.shields.io/badge/Streeam-v1.2.0-38bdf8?style=for-the-badge&logo=twitch&logoColor=white)](https://github.com/1nickzakharov-glitch/streeam)
 [![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg?style=for-the-badge)](LICENSE)
 [![Node.js](https://img.shields.io/badge/Node.js-18%2B-22c55e?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
 [![WebSocket](https://img.shields.io/badge/Real--Time-WebSocket-a855f7?style=for-the-badge&logo=socketdotio&logoColor=white)](https://ws.org)
@@ -46,8 +46,8 @@
 
 ### 1. Installation
 ```bash
-git clone https://github.com/1nickzakharov-glitch/stream-overlay.git
-cd stream-overlay
+git clone https://github.com/1nickzakharov-glitch/streeam.git
+cd streeam
 npm install
 ```
 
