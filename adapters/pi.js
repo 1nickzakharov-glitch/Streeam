@@ -21,19 +21,22 @@ class PiAdapter extends BaseAdapter {
     try {
       const parentDir = path.basename(path.dirname(filePath));
       const cleaned = parentDir.replace(/^--|--$/g, '');
-      const parts = cleaned.split('-');
+      const parts = cleaned.split('-').filter(Boolean);
 
-      if (cleaned.includes('orca-workspaces')) {
+      if (cleaned.includes('workspaces')) {
         const idx = parts.indexOf('workspaces');
         if (idx !== -1 && parts[idx + 2]) {
           return parts.slice(idx + 2).join('-').toUpperCase();
         }
       }
-      if (cleaned.includes('Storello')) return 'STORELLO';
-      if (cleaned.includes('FastToChart')) return 'FASTTOCHART';
+      if (cleaned.includes('pi-ultra')) return 'PI-ULTRA';
+      if (cleaned.includes('my-landing') || cleaned.includes('landing')) return 'MY-LANDING';
       if (cleaned.includes('stream-overlay') || cleaned.includes('streeam')) return 'STREEAM';
       if (cleaned.includes('SuperWhisper')) return 'SUPERWHISPER';
-      return (parts[parts.length - 1] || 'DEV').toUpperCase();
+      if (cleaned.includes('FastToChart')) return 'FASTTOCHART';
+      if (cleaned.includes('Storello')) return 'STORELLO';
+      
+      return parts.slice(-2).join('-').replace(/ПРИЛОЖЕНИЕ-?/g, '').toUpperCase() || 'DEV';
     } catch (e) {
       return 'DEV';
     }
@@ -229,30 +232,44 @@ class PiAdapter extends BaseAdapter {
     if (!fs.existsSync(this.sessionsRoot)) return [];
     const files = [];
 
-    const walk = (dir, depth = 0) => {
-      if (depth > 4) return;
-      try {
-        const entries = fs.readdirSync(dir, { withFileTypes: true });
-        for (const entry of entries) {
-          const fullPath = path.join(dir, entry.name);
-          if (entry.isDirectory()) {
-            walk(fullPath, depth + 1);
-          } else if (entry.isFile() && entry.name.endsWith('.jsonl')) {
-            const stat = fs.statSync(fullPath);
-            files.push({
-              path: fullPath,
-              project: this.deriveProject(fullPath),
-              mtime: stat.mtimeMs,
-              size: stat.size,
-            });
-          }
-        }
-      } catch (e) {}
-    };
+    try {
+      const dirs = fs.readdirSync(this.sessionsRoot, { withFileTypes: true }).filter(d => d.isDirectory());
+      
+      dirs.forEach(d => {
+        const p = path.join(this.sessionsRoot, d.name);
+        const jsonls = [];
+        const walk = (sub, depth = 0) => {
+          if (depth > 3) return;
+          try {
+            const entries = fs.readdirSync(sub, { withFileTypes: true });
+            for (const entry of entries) {
+              const full = path.join(sub, entry.name);
+              if (entry.isDirectory()) {
+                walk(full, depth + 1);
+              } else if (entry.isFile() && entry.name.endsWith('.jsonl')) {
+                const stat = fs.statSync(full);
+                jsonls.push({
+                  path: full,
+                  project: this.deriveProject(full),
+                  mtime: stat.mtimeMs,
+                  size: stat.size,
+                });
+              }
+            }
+          } catch(e) {}
+        };
 
-    walk(this.sessionsRoot);
+        walk(p);
+        if (jsonls.length > 0) {
+          jsonls.sort((a, b) => b.mtime - a.mtime);
+          // Pick the most recent session from this workspace
+          files.push(jsonls[0]);
+        }
+      });
+    } catch (e) {}
+
     files.sort((a, b) => b.mtime - a.mtime);
-    return files.slice(0, this.maxRecentSessions);
+    return files.slice(0, 20); // Track up to 20 concurrent active workspaces/branches!
   }
 
   async backfillSession(sess) {

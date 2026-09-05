@@ -478,12 +478,8 @@
                 <span class="workspace-badge" id="project-tag">ORCA DEV</span>
             </div>
             <div class="header-right">
-                <div class="source-filters">
+                <div class="source-filters" id="source-filters">
                     <button class="filter-btn active" onclick="setFilter('all')">all</button>
-                    <button class="filter-btn" onclick="setFilter('pi')">orca</button>
-                    <button class="filter-btn" onclick="setFilter('claude')">claude</button>
-                    <button class="filter-btn" onclick="setFilter('codex')">codex</button>
-                    <button class="filter-btn" onclick="setFilter('tmux')">tmux</button>
                 </div>
                 <div class="status-pill">
                     <span class="status-dot"></span>
@@ -514,6 +510,7 @@
         let rawEvents = [];
         let renderedEventIds = new Set();
         let activeFilter = 'all';
+        let availableChannels = [];
 
         // Синхронизированный статус агента с бэкенда
         let backendStatus = 'ACTIVE';
@@ -526,6 +523,7 @@
         const footerCount = document.getElementById('footer-count');
         const buddySpeech = document.getElementById('buddy-speech');
         const catImg = document.getElementById('cat-sprite-img');
+        const filterContainer = document.getElementById('source-filters');
 
         const checkSvg = `
             <svg class="check-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -534,22 +532,30 @@
             </svg>
         `;
 
-        function setFilter(source) {
-            activeFilter = source;
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                const text = btn.innerText.toLowerCase();
-                btn.classList.toggle('active', text === source || (source === 'pi' && text === 'orca'));
-            });
+        function setFilter(channel) {
+            activeFilter = channel;
+            updateFilterButtons();
             renderedEventIds.clear();
             container.innerHTML = '';
             renderEvents(true);
+        }
+
+        function updateFilterButtons() {
+            if (!filterContainer) return;
+            // Always have 'all'
+            const items = ['all', ...availableChannels];
+            
+            filterContainer.innerHTML = items.map(ch => {
+                const isActive = activeFilter.toLowerCase() === ch.toLowerCase();
+                return `<button class="filter-btn ${isActive ? 'active' : ''}" onclick="setFilter('${ch}')">${escapeHtml(ch.toLowerCase())}</button>`;
+            }).join('');
         }
 
         // Рендер БЕЗ моргания
         function renderEvents(isFilterSwitch = false) {
             const filtered = activeFilter === 'all'
                 ? rawEvents
-                : rawEvents.filter(ev => ev.source === activeFilter || (activeFilter === 'pi' && (ev.source === 'orca' || ev.source === 'pi')));
+                : rawEvents.filter(ev => (ev.project && ev.project.toLowerCase() === activeFilter.toLowerCase()) || (ev.source && ev.source.toLowerCase() === activeFilter.toLowerCase()));
 
             filtered.forEach(ev => {
                 if (renderedEventIds.has(ev.id)) {
@@ -735,6 +741,13 @@
                         backendStatus = data.status;
                         if (statusLabel) {
                             statusLabel.innerText = data.status === 'ACTIVE' ? 'LIVE' : 'IDLE';
+                        }
+                    }
+                    if (Array.isArray(data.channels)) {
+                        const newChannels = data.channels.filter(Boolean);
+                        if (JSON.stringify(newChannels) !== JSON.stringify(availableChannels)) {
+                            availableChannels = newChannels;
+                            updateFilterButtons();
                         }
                     }
                     if (Array.isArray(data.events)) {

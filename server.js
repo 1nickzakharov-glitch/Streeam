@@ -17,10 +17,13 @@ let idleCheckTimer = null;
 const adapterManager = new AdapterManager();
 
 function broadcastPayload() {
+  const channels = Array.from(new Set(logEvents.map(e => e.project).filter(Boolean)));
+
   const payload = JSON.stringify({
     project: currentProject,
     status: currentStatus,
     events: logEvents,
+    channels,
     sources: adapterManager.getSources(),
   });
   for (const client of wss.clients) {
@@ -162,10 +165,12 @@ const server = http.createServer((req, res) => {
 const wss = new WebSocket.Server({ server, path: '/ws' });
 
 wss.on('connection', ws => {
+  const channels = Array.from(new Set(logEvents.map(e => e.project).filter(Boolean)));
   ws.send(JSON.stringify({
     project: currentProject,
     status: currentStatus,
     events: logEvents,
+    channels,
     sources: adapterManager.getSources(),
   }));
 });
