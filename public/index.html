@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Dev Terminal</title>
+    <title>Streeam — Live Dev Terminal</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap');
 
         :root {
             --bg-term: #000000;
@@ -54,7 +54,7 @@
             overflow: hidden;
         }
 
-        /* Верхняя панель */
+        /* Верхняя панель с брендингом STREEAM и логотипом */
         .terminal-header {
             flex-shrink: 0;
             background: var(--bg-header);
@@ -85,14 +85,51 @@
         .dot-yellow { background: #ffbd2e; }
         .dot-green { background: #27c93f; }
 
-        .workspace-title {
-            font-size: 11.5px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            padding: 2.5px 8px;
+        /* Фирменный логотип: мини-терминальчик с символом */
+        .brand-block {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .terminal-logo-icon {
+            width: 20px;
+            height: 17px;
+            background: #18181b;
+            border: 1.5px solid #00d2ff;
             border-radius: 4px;
-            background: rgba(255, 255, 255, 0.06);
-            color: #d4d4d8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 10px rgba(0, 210, 255, 0.35);
+        }
+
+        .terminal-logo-prompt {
+            color: #00d2ff;
+            font-family: var(--font-code);
+            font-size: 11px;
+            font-weight: 800;
+            line-height: 1;
+            margin-top: -1px;
+        }
+
+        .brand-text {
+            font-family: 'JetBrains Mono', var(--font-code);
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 0.8px;
+            color: #ffffff;
+            text-transform: uppercase;
+        }
+
+        .workspace-badge {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.4px;
+            padding: 2px 7px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #a1a1aa;
             text-transform: uppercase;
         }
 
@@ -177,11 +214,7 @@
             display: none;
         }
 
-        /* 
-           ПЛАВНОЕ ДОБАВЛЕНИЕ НОВЫХ СООБЩЕНИЙ БЕЗ МОРГАНИЯ:
-           Только новый элемент анимируется плавно снизу вверх,
-           а уже существующие не перерисовываются и не моргают!
-        */
+        /* Плавное добавление новых сообщений БЕЗ моргания */
         .log-entry {
             display: flex;
             flex-direction: column;
@@ -197,14 +230,8 @@
         }
 
         @keyframes smoothSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(8px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .log-meta {
@@ -284,58 +311,74 @@
         }
 
         /* 
-           ИНТЕРАКТИВНЫЙ ТЕРМИНАЛЬНЫЙ TODO-БЛОК ДЛЯ AGENT PLAN (как на скриншоте)
+           ИНТЕРАКТИВНЫЙ ТЕРМИНАЛЬНЫЙ TODO-БЛОК ДЛЯ СТРИМА (как в терминале)
         */
-        .todo-container {
+        .todo-card {
             margin-top: 6px;
-            padding: 10px 14px;
+            padding: 12px 16px;
             background: rgba(255, 255, 255, 0.03);
             border-radius: 6px;
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 7px;
             font-family: var(--font-code);
-            font-size: 12px;
+            font-size: 12.5px;
         }
 
-        .todo-header {
+        .todo-top-line {
             display: flex;
-            align-items: center;
-            justify-content: space-between;
+            align-items: baseline;
+            gap: 10px;
+            margin-bottom: 2px;
+        }
+
+        .todo-badge-title {
             color: #94a3b8;
-            font-weight: 600;
-            font-size: 11.5px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            padding-bottom: 5px;
-            margin-bottom: 3px;
+            font-weight: 700;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .todo-phase {
+        .todo-progress-count {
             color: #38bdf8;
+            font-size: 11.5px;
             font-weight: 600;
         }
 
-        .todo-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #cbd5e1;
-            line-height: 1.4;
+        .todo-phase-name {
+            color: #00d2ff;
+            font-weight: 700;
+            font-size: 13px;
+            margin-bottom: 4px;
         }
 
-        .todo-row.completed {
-            color: #64748b;
+        .todo-item-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            line-height: 1.42;
+        }
+
+        .todo-item-row.done {
+            color: #52525b;
             text-decoration: line-through;
         }
 
-        .todo-check {
-            color: #10b981;
-            font-weight: bold;
+        .todo-item-row.pending {
+            color: #e4e4e7;
         }
 
-        .todo-circle {
+        .todo-icon-check {
+            color: #10b981;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .todo-icon-circle {
             color: #38bdf8;
-            font-weight: bold;
+            font-weight: 800;
+            flex-shrink: 0;
         }
 
         /* Нижняя строка */
@@ -363,11 +406,11 @@
         @keyframes blink { 50% { opacity: 0; } }
 
         /* =========================================================
-           ОТЧЕТЛИВЫЙ И МИЛЫЙ PIXELPAWS КОТИК С ЧЕТКИМИ КАДРАМИ
+           ОРИГИНАЛЬНЫЙ АНИМИРОВАННЫЙ BONGO CAT (Классический стримерский)
            ========================================================= */
         .pixel-buddy-wrapper {
             position: absolute;
-            bottom: 22px;
+            bottom: 20px;
             right: 20px;
             display: flex;
             flex-direction: column;
@@ -395,11 +438,10 @@
         }
 
         #cat-sprite-img {
-            width: 110px;
-            height: 88px;
+            width: 100px;
+            height: 60px;
             object-fit: contain;
-            image-rendering: pixelated;
-            filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.9));
+            filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.9));
         }
 
         /* Canvas Confetti */
@@ -419,7 +461,7 @@
         <!-- Confetti layer for milestone celebration -->
         <canvas id="confetti-canvas"></canvas>
 
-        <!-- Header -->
+        <!-- Header с логотипом STREEAM и жирным шрифтом -->
         <div class="terminal-header">
             <div class="header-left">
                 <div class="window-dots">
@@ -427,7 +469,16 @@
                     <div class="dot dot-yellow"></div>
                     <div class="dot dot-green"></div>
                 </div>
-                <span class="workspace-title" id="project-tag">MULTI-AGENT</span>
+
+                <!-- Брендинг Streeam: мини-терминальчик и жирный шрифт -->
+                <div class="brand-block">
+                    <div class="terminal-logo-icon">
+                        <span class="terminal-logo-prompt">&gt;</span>
+                    </div>
+                    <span class="brand-text">STREEAM</span>
+                </div>
+
+                <span class="workspace-badge" id="project-tag">MULTI-AGENT</span>
             </div>
             <div class="header-right">
                 <div class="source-filters">
@@ -449,10 +500,10 @@
             <!-- Dynamic entries -->
         </div>
 
-        <!-- Четкий, крупный и медленный анимированный рыжий кот с клавиатурой -->
+        <!-- Bongo Cat / Coding Pet -->
         <div class="pixel-buddy-wrapper">
             <div class="pet-speech-cloud" id="buddy-speech">coding live... ⚡</div>
-            <img id="cat-sprite-img" src="cat-type-1.png" alt="Pixel Cat" />
+            <img id="cat-sprite-img" src="bongo-frame1.png" alt="Bongo Cat" />
         </div>
 
         <!-- Terminal Footer -->
@@ -486,20 +537,19 @@
                 const text = btn.innerText.toLowerCase();
                 btn.classList.toggle('active', text === source || (source === 'pi' && text === 'orca'));
             });
-            // Full re-render on filter click
             renderedEventIds.clear();
             container.innerHTML = '';
             renderEvents(true);
         }
 
-        // Рендер без моргания: обновляются только новые элементы, существующие не трогаются!
+        // Рендер БЕЗ моргания: только новые строки плавно анимируются
         function renderEvents(isFilterSwitch = false) {
             const filtered = activeFilter === 'all'
                 ? rawEvents
                 : rawEvents.filter(ev => ev.source === activeFilter || (activeFilter === 'pi' && (ev.source === 'orca' || ev.source === 'pi')));
 
             filtered.forEach(ev => {
-                if (renderedEventIds.has(ev.id)) return; // Уже отрендерен, не дергаем!
+                if (renderedEventIds.has(ev.id)) return;
 
                 renderedEventIds.add(ev.id);
                 const type = ev.type || 'action';
@@ -512,19 +562,23 @@
 
                 let todoHtml = '';
                 if (ev.meta && ev.meta.kind === 'todo_list' && Array.isArray(ev.meta.items)) {
+                    const doneCount = ev.meta.items.filter(i => i.done).length;
+                    const totalCount = ev.meta.items.length;
+
                     const itemsHtml = ev.meta.items.map(it => `
-                        <div class="todo-row ${it.done ? 'completed' : ''}">
-                            <span class="${it.done ? 'todo-check' : 'todo-circle'}">${it.done ? '✓' : '○'}</span>
+                        <div class="todo-item-row ${it.done ? 'done' : 'pending'}">
+                            <span class="${it.done ? 'todo-icon-check' : 'todo-icon-circle'}">${it.done ? '✓' : '○'}</span>
                             <span>${escapeHtml(it.text)}</span>
                         </div>
                     `).join('');
 
                     todoHtml = `
-                        <div class="todo-container">
-                            <div class="todo-header">
-                                <span class="todo-phase">Todo: ${escapeHtml(ev.meta.phase || 'Sprint')}</span>
-                                <span>0/${ev.meta.items.length} done</span>
+                        <div class="todo-card">
+                            <div class="todo-top-line">
+                                <span class="todo-badge-title">Todo</span>
+                                <span class="todo-progress-count">${doneCount}/${totalCount} done</span>
                             </div>
+                            <div class="todo-phase-name">${escapeHtml(ev.meta.phase || 'Sprint Roadmap')}</div>
                             ${itemsHtml}
                         </div>
                     `;
@@ -557,27 +611,19 @@
         }
 
         // =======================================================
-        // ПЛАВНАЯ СПОКОЙНАЯ АНИМАЦИЯ КОТИКА (МЕДЛЕННО И ЧЕТКО)
+        // ПЛАВНАЯ СПОКОЙНАЯ АНИМАЦИЯ КОТИКА BONGO CAT
         // =======================================================
-        let catFrame = 1;
-        let isProud = false;
+        let bongoFrame = 1;
 
         setInterval(() => {
-            if (isProud) {
-                catImg.src = 'cat-proud.png';
-            } else {
-                catFrame = catFrame === 1 ? 2 : 1;
-                catImg.src = catFrame === 1 ? 'cat-type-1.png' : 'cat-type-2.png';
-            }
-        }, 550); // Спокойная, размеренная смена кадра каждые 550мс
+            bongoFrame = bongoFrame === 1 ? 2 : 1;
+            catImg.src = bongoFrame === 1 ? 'bongo-frame1.png' : 'bongo-frame2.png';
+        }, 360);
 
         function celebrateTask() {
             triggerMiniConfetti();
-            isProud = true;
-            catImg.src = 'cat-proud.png';
             if (buddySpeech) buddySpeech.innerText = 'milestone finished! 🎉';
             setTimeout(() => {
-                isProud = false;
                 if (buddySpeech) buddySpeech.innerText = 'coding live... ⚡';
             }, 4000);
         }
@@ -649,7 +695,6 @@
                         rawEvents = data.events;
                         renderEvents(false);
 
-                        // If new event added and it's done -> celebrate
                         if (rawEvents.length > prevCount && rawEvents.length > 0) {
                             const latest = rawEvents[rawEvents.length - 1];
                             if (latest.type === 'done') {

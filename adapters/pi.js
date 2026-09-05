@@ -13,6 +13,8 @@ class PiAdapter extends BaseAdapter {
     this.watchedOffsets = new Map();
     this.timer = null;
     this.maxRecentSessions = options.maxRecentSessions || 4;
+    // Track active sprint todo state per project
+    this.activeTodos = new Map();
   }
 
   deriveProject(filePath) {
@@ -45,7 +47,6 @@ class PiAdapter extends BaseAdapter {
         : 'Editing source code to apply changes';
     }
     if (tool === 'todo') {
-      // Return null here, we handle todo specially as an interactive checklist
       return null;
     }
     if (tool === 'bash') {
@@ -117,42 +118,48 @@ class PiAdapter extends BaseAdapter {
           }));
         }
       } else if (role === 'assistant' && Array.isArray(content)) {
-        // 1. Todo tool call: extract full checklist / milestone plan
+        // 1. Todo tool call: parse and emit real checklist!
         for (const p of content) {
           if (p.type === 'toolCall' && p.name === 'todo') {
             const args = p.arguments || {};
-            if (args.list && Array.isArray(args.list)) {
-              // Phased list
+            if (args.op === 'init' && args.list && Array.isArray(args.list)) {
               const allItems = [];
+              const phaseName = args.list[0]?.phase || 'Sprint Roadmap';
               args.list.forEach(ph => {
                 if (Array.isArray(ph.items)) {
                   ph.items.forEach(it => allItems.push({ text: it, done: false }));
                 }
               });
+              this.activeTodos.set(project, { phase: phaseName, items: allItems });
               this.emitEvent(createUnifiedEvent({
                 source: 'pi',
                 project,
                 type: 'plan',
                 badge: `${project} • AGENT PLAN`,
-                title: args.list[0]?.phase || 'Sprint Plan',
-                meta: { kind: 'todo_list', phase: args.list[0]?.phase, items: allItems },
+                title: `Active Plan: ${phaseName}`,
+                meta: { kind: 'todo_list', phase: phaseName, items: allItems },
                 timestamp,
               }));
-            } else if (args.op === 'done' || args.op === 'start') {
-              this.emitEvent(createUnifiedEvent({
-                source: 'pi',
-                project,
-                type: args.op === 'done' ? 'done' : 'action',
-                badge: args.op === 'done' ? `${project} • COMPLETED STEP` : `${project} • AGENT ACTION`,
-                title: args.task || 'Task update',
-                meta: { kind: 'todo_update', op: args.op, task: args.task },
-                timestamp,
-              }));
+            } else if (args.op === 'done' && args.task) {
+              const current = this.activeTodos.get(project);
+              if (current && Array.isArray(current.items)) {
+                const found = current.items.find(it => it.text === args.task);
+                if (found) found.done = true;
+                this.emitEvent(createUnifiedEvent({
+                  source: 'pi',
+                  project,
+                  type: 'plan',
+                  badge: `${project} • AGENT PLAN`,
+                  title: `Sprint Progress: ${current.phase}`,
+                  meta: { kind: 'todo_list', phase: current.phase, items: current.items },
+                  timestamp,
+                }));
+              }
             }
           }
         }
 
-        // 2. High-level agent plan / reasoning
+        // 2. High-level agent plan / reasoning thoughts
         for (const p of content) {
           if (p.type === 'thinking' && p.thinking) {
             const lines = p.thinking.split('\n').map(l => l.replace(/\*\*/g, '').trim()).filter(Boolean);
@@ -242,7 +249,7 @@ class PiAdapter extends BaseAdapter {
 
   async backfillSession(sess) {
     try {
-      const readSize = Math.min(sess.size, 256 * 1024);
+      const readSize = Math.min(sess.size, 512 * 1024);
       const buffer = Buffer.alloc(readSize);
       const fd = fs.openSync(sess.path, 'r');
       fs.readSync(fd, buffer, 0, readSize, Math.max(0, sess.size - readSize));
@@ -250,7 +257,8 @@ class PiAdapter extends BaseAdapter {
 
       this.watchedOffsets.set(sess.path, sess.size);
       const lines = buffer.toString('utf8').split('\n').filter(Boolean);
-      for (const line of lines.slice(-6)) {
+      // Read last 25 lines so active todo list is backfilled
+      for (const line of lines.slice(-25)) {
         await this.processLine(line, sess.path, sess.project);
       }
     } catch (e) {}
