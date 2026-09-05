@@ -3,19 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Streeam — Clean Developer Terminal</title>
+    <title>Live Dev Terminal</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600&display=swap');
 
         :root {
-            /* Чистый глубокий чёрный фон */
             --bg-term: #000000;
             --bg-header: #050505;
             
-            /* Цвета текста и заливок (БЕЗ ОБВОДОК) */
-            --text-main: #d4d4d8;
-            --text-dim: #71717a;
-            --text-muted: #52525b;
+            --text-main: #e4e4e7;
+            --text-meta: rgba(255, 255, 255, 0.40); /* Заметно более прозрачный для таймкодов и префиксов */
+            --text-badge: rgba(255, 255, 255, 0.50);
             
             --user-cyan: #00d2ff;
             --user-bg: rgba(0, 210, 255, 0.08);
@@ -23,8 +21,7 @@
             --green-done: #10b981;
             --green-bg: rgba(16, 185, 129, 0.12);
             
-            /* Натуральный пропорциональный шрифт как в интерфейсах macOS/Pi */
-            --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Inter", "Helvetica Neue", sans-serif;
+            --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Inter", sans-serif;
             --font-code: "SF Mono", Menlo, Monaco, monospace;
         }
 
@@ -44,7 +41,7 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Никаких жестких обводок, чистый минималистичный блок */
+        /* Чистый терминальный фрейм */
         .terminal-container {
             width: 100%;
             height: 100%;
@@ -52,7 +49,6 @@
             flex-direction: column;
             background: var(--bg-term);
             border-radius: 10px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.95);
             position: relative;
             overflow: hidden;
         }
@@ -61,7 +57,7 @@
         .terminal-header {
             flex-shrink: 0;
             background: var(--bg-header);
-            padding: 11px 18px;
+            padding: 10px 18px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -88,28 +84,15 @@
         .dot-yellow { background: #ffbd2e; }
         .dot-green { background: #27c93f; }
 
-        .terminal-title {
-            font-size: 12.5px;
-            font-weight: 500;
-            letter-spacing: -0.1px;
-            color: #e4e4e7;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .prompt-symbol {
-            color: #00d2ff;
+        /* Чистая индикация активного рабочего пространства */
+        .workspace-title {
+            font-size: 11.5px;
             font-weight: 600;
-        }
-
-        .project-tag {
-            font-size: 10.5px;
-            font-weight: 500;
-            padding: 2px 7px;
+            letter-spacing: 0.5px;
+            padding: 2.5px 8px;
             border-radius: 4px;
-            background: rgba(0, 210, 255, 0.12);
-            color: #38bdf8;
+            background: rgba(255, 255, 255, 0.06);
+            color: #d4d4d8;
             text-transform: uppercase;
         }
 
@@ -177,17 +160,17 @@
             50% { opacity: 0.6; transform: scale(1.15); }
         }
 
-        /* Лента сообщений: свободные отступы между карточками, плотное аккуратное межстрочное */
+        /* Лента сообщений: ровное идеальное выравнивание по левому краю без лишних паразитных отступов */
         .terminal-stream {
             flex: 1;
-            padding: 20px 22px;
+            padding: 18px 22px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 22px; /* Просторные комфортные отступы между записями */
+            gap: 20px;
             scroll-behavior: smooth;
             scrollbar-width: none;
-            padding-bottom: 110px; /* Свободное место для питомца внизу */
+            padding-bottom: 110px;
         }
 
         .terminal-stream::-webkit-scrollbar {
@@ -197,7 +180,9 @@
         .log-entry {
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 4px;
+            padding: 0;
+            margin: 0;
             animation: fadeIn 0.16s ease-out;
         }
 
@@ -206,17 +191,20 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* Префиксы и время: прозрачнее основного текста, выровнены строго по левой оси */
         .log-meta {
             display: flex;
             align-items: center;
             gap: 8px;
             font-size: 11px;
-            color: var(--text-dim);
+            color: var(--text-meta);
+            padding: 0;
+            margin: 0;
         }
 
         .time-text {
-            color: #52525b;
-            font-size: 10.5px;
+            color: var(--text-meta);
+            font-size: 10px;
             font-family: var(--font-code);
         }
 
@@ -225,31 +213,33 @@
             font-weight: 600;
             letter-spacing: 0.3px;
             text-transform: uppercase;
-            padding: 1px 6px;
-            border-radius: 4px;
+            padding: 1px 5px;
+            border-radius: 3px;
             background: rgba(255, 255, 255, 0.05);
-            color: #a1a1aa;
+            color: var(--text-badge);
         }
 
-        /* Плотное, натуральное межстрочное расстояние без моноширинности */
         .title-text {
             font-size: 13.5px;
-            line-height: 1.38; /* Аккуратное читабельное межстрочное */
-            color: #a1a1aa;    /* Спокойный терминальный серый */
+            line-height: 1.38;
+            color: var(--text-main);
             font-weight: 400;
             letter-spacing: -0.15px;
             word-break: break-word;
+            padding: 0;
+            margin: 0;
         }
 
-        /* 1. Сообщение пользователя: ТОЛЬКО мягкая заливка, БЕЗ ОБВОДКИ */
+        /* Сообщение пользователя: аккуратная мягкая заливка, сбалансированные внутренние отступы */
         .log-user {
             background: var(--user-bg);
             border-radius: 7px;
-            padding: 12px 16px;
+            padding: 12px 14px;
+            margin: -2px 0;
         }
 
         .log-user .badge {
-            background: rgba(0, 210, 255, 0.2);
+            background: rgba(0, 210, 255, 0.18);
             color: #38bdf8;
         }
 
@@ -257,10 +247,9 @@
             color: #f0f9ff;
             font-weight: 450;
             font-size: 14px;
-            line-height: 1.38;
         }
 
-        /* 2. Завершенный шаг: чистая зеленая заливка галочки, БЕЗ ОБВОДОК */
+        /* Завершенный шаг */
         .log-done .title-text {
             color: #6ee7b7;
             display: flex;
@@ -281,7 +270,7 @@
         /* Нижняя строка */
         .terminal-footer {
             flex-shrink: 0;
-            padding: 8px 18px;
+            padding: 8px 20px;
             background: #030304;
             display: flex;
             align-items: center;
@@ -303,12 +292,12 @@
         @keyframes blink { 50% { opacity: 0; } }
 
         /* =========================================================
-           ВЫСОКОДЕТАЛИЗИРОВАННЫЙ МИЛЫЙ ПИКСЕЛЬНЫЙ ПИТОМЕЦ (Bottom Right)
+           РЕАЛИСТИЧНЫЙ, ЖИВОЙ И ДЕТАЛИЗИРОВАННЫЙ КИБЕР-КОТИК
            ========================================================= */
         .pixel-buddy-wrapper {
             position: absolute;
-            bottom: 28px;
-            right: 20px;
+            bottom: 26px;
+            right: 22px;
             display: flex;
             flex-direction: column;
             align-items: flex-end;
@@ -317,7 +306,7 @@
         }
 
         .pet-speech-cloud {
-            background: #14161f;
+            background: #11131a;
             border-radius: 6px;
             padding: 4px 9px;
             font-size: 10px;
@@ -325,7 +314,7 @@
             color: #38bdf8;
             margin-bottom: 6px;
             white-space: nowrap;
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.7);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.8);
             animation: petBounce 3s ease-in-out infinite;
         }
 
@@ -334,35 +323,61 @@
             50% { transform: translateY(-2.5px); }
         }
 
-        /* Крупный, высокодетализированный питомец */
+        /* Реалистичный пиксельный котик со столом, лампой, кружкой и клавиатурой */
         .pixel-pet {
-            width: 100px;
-            height: 80px;
+            width: 106px;
+            height: 84px;
             position: relative;
             image-rendering: pixelated;
         }
 
-        /* Рабочий стол */
+        /* Стол */
         .pet-desk {
             position: absolute;
             bottom: 0;
             left: 0;
-            width: 100px;
+            width: 106px;
             height: 16px;
-            background: #18181b;
+            background: #1c1917;
             border-radius: 3px;
         }
 
-        /* Монитор с эффектом свечения */
+        /* Кофейная кружка с паром */
+        .pet-coffee {
+            position: absolute;
+            bottom: 16px;
+            left: 5px;
+            width: 8px;
+            height: 9px;
+            background: #e2e8f0;
+            border-radius: 1px 1px 2px 2px;
+        }
+        .coffee-steam {
+            position: absolute;
+            top: -6px;
+            left: 2px;
+            width: 3px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 2px;
+            animation: steamFloat 1.8s infinite ease-out;
+        }
+        @keyframes steamFloat {
+            0% { transform: translateY(0) scaleX(0.8); opacity: 0; }
+            50% { opacity: 0.6; }
+            100% { transform: translateY(-5px) scaleX(1.4); opacity: 0; }
+        }
+
+        /* Монитор с клавиатурой */
         .pet-pc {
             position: absolute;
-            bottom: 15px;
-            left: 8px;
-            width: 38px;
-            height: 30px;
+            bottom: 16px;
+            left: 17px;
+            width: 40px;
+            height: 31px;
             background: #27272a;
-            border-radius: 4px;
-            box-shadow: 0 0 16px rgba(0, 210, 255, 0.15);
+            border-radius: 3px;
+            box-shadow: 0 0 16px rgba(0, 210, 255, 0.18);
         }
 
         .pet-screen {
@@ -371,7 +386,7 @@
             left: 2px;
             right: 2px;
             bottom: 2px;
-            background: #050811;
+            background: #030712;
             border-radius: 2px;
             overflow: hidden;
         }
@@ -380,7 +395,7 @@
             position: absolute;
             top: 3px;
             left: 3px;
-            width: 18px;
+            width: 20px;
             height: 2px;
             background: #00d2ff;
             box-shadow: 0 0 4px #00d2ff;
@@ -391,7 +406,7 @@
             position: absolute;
             top: 8px;
             left: 3px;
-            width: 26px;
+            width: 28px;
             height: 2px;
             background: #10b981;
             box-shadow: 0 0 4px #10b981;
@@ -402,7 +417,7 @@
             position: absolute;
             top: 13px;
             left: 3px;
-            width: 14px;
+            width: 16px;
             height: 2px;
             background: #c084fc;
             box-shadow: 0 0 4px #c084fc;
@@ -413,7 +428,7 @@
             position: absolute;
             top: 18px;
             left: 3px;
-            width: 20px;
+            width: 24px;
             height: 2px;
             background: #f59e0b;
             box-shadow: 0 0 4px #f59e0b;
@@ -425,44 +440,54 @@
 
         .pet-pc-stand {
             position: absolute;
-            bottom: 10px;
-            left: 22px;
+            bottom: 11px;
+            left: 32px;
             width: 10px;
             height: 6px;
             background: #3f3f46;
+        }
+
+        /* Клавиатура */
+        .pet-keyboard {
+            position: absolute;
+            bottom: 16px;
+            left: 20px;
+            width: 32px;
+            height: 4px;
+            background: #374151;
             border-radius: 1px;
         }
 
-        /* Милый детализированный кибер-котик */
+        /* Сам реалистичный котик (живой мех, анатомия ушек, мордочки, светящийся воротничок) */
         .pet-creature {
             position: absolute;
             bottom: 14px;
             right: 8px;
-            width: 44px;
-            height: 48px;
-            animation: creatureBreathe 2.5s ease-in-out infinite;
+            width: 48px;
+            height: 52px;
+            animation: catBreathing 2.4s ease-in-out infinite;
         }
 
-        @keyframes creatureBreathe {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-1.5px); }
+        @keyframes catBreathing {
+            0%, 100% { transform: translateY(0) scaleY(1); }
+            50% { transform: translateY(-1.5px) scaleY(1.02); }
         }
 
-        /* Ушки с розовой серединкой */
+        /* Ушки с розовой сердцевиной и шерстинками */
         .pet-ear-left {
             position: absolute;
             top: 0;
-            left: 5px;
-            width: 11px;
-            height: 11px;
-            background: #3b82f6;
+            left: 6px;
+            width: 13px;
+            height: 13px;
+            background: #2563eb;
             clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
         }
         .pet-ear-left::after {
             content: '';
             position: absolute;
-            top: 3px;
-            left: 2px;
+            top: 4px;
+            left: 3px;
             width: 7px;
             height: 7px;
             background: #f472b6;
@@ -472,58 +497,71 @@
         .pet-ear-right {
             position: absolute;
             top: 0;
-            right: 5px;
-            width: 11px;
-            height: 11px;
-            background: #3b82f6;
+            right: 6px;
+            width: 13px;
+            height: 13px;
+            background: #2563eb;
             clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
         }
         .pet-ear-right::after {
             content: '';
             position: absolute;
-            top: 3px;
-            right: 2px;
+            top: 4px;
+            right: 3px;
             width: 7px;
             height: 7px;
             background: #f472b6;
             clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
         }
 
-        /* Голова котика */
+        /* Голова котика с мягкими гранями */
         .pet-head {
             position: absolute;
-            top: 7px;
+            top: 8px;
             left: 3px;
-            width: 38px;
-            height: 27px;
-            background: #2563eb;
-            border-radius: 7px;
+            width: 42px;
+            height: 30px;
+            background: #3b82f6;
+            border-radius: 10px;
+            overflow: hidden;
         }
 
-        /* Большие выразительные глаза */
+        /* Тень мордочки */
+        .pet-face-shadow {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 14px;
+            background: #2563eb;
+            border-radius: 0 0 10px 10px;
+        }
+
+        /* Большие выразительные живые глаза с бликами */
         .pet-eyes {
             position: absolute;
-            top: 6px;
-            left: 6px;
-            right: 6px;
+            top: 8px;
+            left: 7px;
+            right: 7px;
             display: flex;
             justify-content: space-between;
+            z-index: 5;
         }
 
         .pet-eye {
-            width: 8.5px;
-            height: 10px;
+            width: 9px;
+            height: 11px;
             background: #020617;
             border-radius: 3px;
             position: relative;
-            animation: petBlink 3.8s infinite;
+            animation: petBlink 4s infinite;
         }
 
         .pet-eye::before {
             content: '';
             position: absolute;
-            top: 1px;
-            left: 1px;
+            top: 1.5px;
+            left: 1.5px;
             width: 4px;
             height: 4px;
             background: #ffffff;
@@ -535,9 +573,9 @@
             position: absolute;
             bottom: 1.5px;
             right: 1.5px;
-            width: 2px;
-            height: 2px;
-            background: #38bdf8;
+            width: 2.5px;
+            height: 2.5px;
+            background: #00d2ff;
             border-radius: 50%;
         }
 
@@ -546,14 +584,15 @@
             97% { transform: scaleY(0.1); }
         }
 
-        /* Румяные щёчки */
+        /* Розовые щёчки */
         .pet-cheeks {
             position: absolute;
-            bottom: 3px;
-            left: 4px;
-            right: 4px;
+            bottom: 4px;
+            left: 5px;
+            right: 5px;
             display: flex;
             justify-content: space-between;
+            z-index: 5;
         }
 
         .pet-cheek {
@@ -564,70 +603,90 @@
             opacity: 0.85;
         }
 
-        /* Маленький носик */
-        .pet-nose {
+        /* Носик и мордочка */
+        .pet-muzzle {
             position: absolute;
-            bottom: 7px;
-            left: 17px;
+            bottom: 6px;
+            left: 19px;
             width: 4px;
-            height: 2.5px;
-            background: #fbcfe8;
+            height: 3px;
+            background: #fda4af;
             border-radius: 2px;
-        }
-
-        /* Тельце */
-        .pet-body {
-            position: absolute;
-            bottom: 0;
-            left: 7px;
-            width: 30px;
-            height: 19px;
-            background: #1d4ed8;
-            border-radius: 6px;
-        }
-
-        /* Лапки печатают */
-        .pet-paws {
-            position: absolute;
-            bottom: 2px;
-            left: -4px;
-            display: flex;
-            gap: 10px;
             z-index: 5;
         }
 
-        .pet-paw {
-            width: 8px;
-            height: 6px;
+        /* Тельце с мягким животиком */
+        .pet-body {
+            position: absolute;
+            bottom: 0;
+            left: 9px;
+            width: 32px;
+            height: 21px;
+            background: #1d4ed8;
+            border-radius: 8px;
+        }
+        .pet-belly {
+            position: absolute;
+            bottom: 2px;
+            left: 14px;
+            width: 14px;
+            height: 14px;
             background: #60a5fa;
+            border-radius: 6px;
+        }
+
+        /* Лапки печатают по клавиатуре */
+        .pet-paws {
+            position: absolute;
+            bottom: 4px;
+            left: -4px;
+            display: flex;
+            gap: 12px;
+            z-index: 10;
+        }
+
+        .pet-paw {
+            width: 9px;
+            height: 6px;
+            background: #93c5fd;
             border-radius: 3px;
-            animation: pawTyping 0.2s infinite alternate ease-in-out;
+            animation: pawTyping 0.18s infinite alternate ease-in-out;
         }
 
         .pet-paw.right {
-            animation-delay: 0.1s;
+            animation-delay: 0.09s;
         }
 
         @keyframes pawTyping {
             0% { transform: translateY(0); }
-            100% { transform: translateY(3px); }
+            100% { transform: translateY(3.5px); }
         }
 
-        /* Хвост */
+        /* Хвост с белым кончиком */
         .pet-tail {
             position: absolute;
-            bottom: 5px;
-            right: -7px;
-            width: 10px;
-            height: 6px;
-            background: #3b82f6;
+            bottom: 6px;
+            right: -8px;
+            width: 12px;
+            height: 7px;
+            background: #2563eb;
             border-radius: 4px;
             animation: tailWiggle 1.4s ease-in-out infinite alternate;
+        }
+        .pet-tail::after {
+            content: '';
+            position: absolute;
+            top: 1px;
+            right: 1px;
+            width: 4px;
+            height: 5px;
+            background: #93c5fd;
+            border-radius: 2px;
         }
 
         @keyframes tailWiggle {
             0% { transform: rotate(0deg); }
-            100% { transform: rotate(24deg) translateY(-3px); }
+            100% { transform: rotate(26deg) translateY(-3px); }
         }
 
         /* Canvas Confetti */
@@ -655,8 +714,8 @@
                     <div class="dot dot-yellow"></div>
                     <div class="dot dot-green"></div>
                 </div>
-                <span class="terminal-title"><span class="prompt-symbol">❯</span> streeam</span>
-                <span class="project-tag" id="project-tag">MULTI-AGENT</span>
+                <!-- Чистый индикатор активного проекта -->
+                <span class="workspace-title" id="project-tag">MULTI-AGENT</span>
             </div>
             <div class="header-right">
                 <div class="source-filters">
@@ -673,16 +732,22 @@
             </div>
         </div>
 
-        <!-- Terminal Stream -->
+        <!-- Terminal Stream (идеальное выравнивание по левому краю) -->
         <div class="terminal-stream" id="stream-container">
             <!-- Dynamic entries -->
         </div>
 
-        <!-- Highly detailed animated pixel pet -->
+        <!-- Высокодетализированный реалистичный кибер-котик -->
         <div class="pixel-buddy-wrapper">
             <div class="pet-speech-cloud" id="buddy-speech">coding live... ⚡</div>
             <div class="pixel-pet">
                 <div class="pet-desk"></div>
+                
+                <!-- Кружка кофе -->
+                <div class="pet-coffee">
+                    <div class="coffee-steam"></div>
+                </div>
+
                 <div class="pet-pc-stand"></div>
                 <div class="pet-pc">
                     <div class="pet-screen">
@@ -692,12 +757,16 @@
                         <div class="screen-line-4"></div>
                     </div>
                 </div>
+                <div class="pet-keyboard"></div>
                 
+                <!-- Котик -->
                 <div class="pet-creature">
                     <div class="pet-tail"></div>
                     <div class="pet-ear-left"></div>
                     <div class="pet-ear-right"></div>
+                    
                     <div class="pet-head">
+                        <div class="pet-face-shadow"></div>
                         <div class="pet-eyes">
                             <div class="pet-eye"></div>
                             <div class="pet-eye"></div>
@@ -706,9 +775,13 @@
                             <div class="pet-cheek"></div>
                             <div class="pet-cheek"></div>
                         </div>
-                        <div class="pet-nose"></div>
+                        <div class="pet-muzzle"></div>
                     </div>
-                    <div class="pet-body"></div>
+
+                    <div class="pet-body">
+                        <div class="pet-belly"></div>
+                    </div>
+                    
                     <div class="pet-paws">
                         <div class="pet-paw"></div>
                         <div class="pet-paw right"></div>
