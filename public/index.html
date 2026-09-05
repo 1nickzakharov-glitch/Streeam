@@ -16,7 +16,7 @@
             --text-badge: rgba(255, 255, 255, 0.50);
             
             --user-cyan: #00d2ff;
-            --user-bg: rgba(0, 210, 255, 0.08);
+            --user-bg: rgba(0, 210, 255, 0.16); /* Более заметная и приятная заливка для человека */
             
             --green-done: #10b981;
             --green-bg: rgba(16, 185, 129, 0.12);
@@ -233,20 +233,22 @@
         /* Сообщение пользователя: аккуратная мягкая заливка, сбалансированные внутренние отступы */
         .log-user {
             background: var(--user-bg);
-            border-radius: 7px;
-            padding: 12px 14px;
-            margin: -2px 0;
+            border-radius: 8px;
+            padding: 13px 16px;
+            margin: 2px 0;
+            box-shadow: 0 4px 20px rgba(0, 210, 255, 0.08);
         }
 
         .log-user .badge {
-            background: rgba(0, 210, 255, 0.18);
+            background: rgba(0, 210, 255, 0.28);
             color: #38bdf8;
+            font-weight: 700;
         }
 
         .log-user .title-text {
-            color: #f0f9ff;
-            font-weight: 450;
-            font-size: 14px;
+            color: #ffffff;
+            font-weight: 500;
+            font-size: 14.5px;
         }
 
         /* Завершенный шаг */
