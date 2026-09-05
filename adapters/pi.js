@@ -130,30 +130,38 @@ class PiAdapter extends BaseAdapter {
                   ph.items.forEach(it => allItems.push({ text: it, done: false }));
                 }
               });
-              this.activeTodos.set(project, { phase: phaseName, items: allItems });
-              this.emitEvent(createUnifiedEvent({
+              // Keep a stable deterministic ID for this plan so updates reuse the same event
+              const planId = `plan-${project}-${phaseName.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
+              this.activeTodos.set(project, { id: planId, phase: phaseName, items: allItems });
+              
+              const planEvent = createUnifiedEvent({
                 source: 'pi',
                 project,
                 type: 'plan',
                 badge: `${project} • AGENT PLAN`,
                 title: `Active Plan: ${phaseName}`,
-                meta: { kind: 'todo_list', phase: phaseName, items: allItems },
+                meta: { kind: 'todo_list', phase: phaseName, items: allItems, planId },
                 timestamp,
-              }));
+              });
+              planEvent.id = planId;
+              this.emitEvent(planEvent);
             } else if (args.op === 'done' && args.task) {
               const current = this.activeTodos.get(project);
               if (current && Array.isArray(current.items)) {
                 const found = current.items.find(it => it.text === args.task);
                 if (found) found.done = true;
-                this.emitEvent(createUnifiedEvent({
+                
+                const updateEvent = createUnifiedEvent({
                   source: 'pi',
                   project,
                   type: 'plan',
                   badge: `${project} • AGENT PLAN`,
                   title: `Sprint Progress: ${current.phase}`,
-                  meta: { kind: 'todo_list', phase: current.phase, items: current.items },
+                  meta: { kind: 'todo_list', phase: current.phase, items: current.items, planId: current.id },
                   timestamp,
-                }));
+                });
+                updateEvent.id = current.id; // REUSE EXACT SAME ID SO IT UPDATES IN PLACE!
+                this.emitEvent(updateEvent);
               }
             }
           }

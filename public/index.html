@@ -550,24 +550,9 @@
                 ? rawEvents
                 : rawEvents.filter(ev => ev.source === activeFilter || (activeFilter === 'pi' && (ev.source === 'orca' || ev.source === 'pi')));
 
-            // Проверяем, есть ли активный Todo-план
-            let activeTodoEvent = null;
-            for (let i = filtered.length - 1; i >= 0; i--) {
-                const ev = filtered[i];
-                if (ev.meta && ev.meta.kind === 'todo_list' && Array.isArray(ev.meta.items)) {
-                    activeTodoEvent = ev;
-                    break;
-                }
-            }
-
             filtered.forEach(ev => {
-                // Если существует один активный план, не дублируем его старые копии
-                if (activeTodoEvent && ev.meta && ev.meta.kind === 'todo_list' && ev.id !== activeTodoEvent.id) {
-                    return;
-                }
-
                 if (renderedEventIds.has(ev.id)) {
-                    // Если план обновился (галочка добавилась), обновляем его содержимое in-place
+                    // Update plan IN-PLACE in DOM so it never duplicates!
                     if (ev.meta && ev.meta.kind === 'todo_list') {
                         const existingEl = document.getElementById(`msg-${ev.id}`);
                         if (existingEl) {
@@ -583,14 +568,7 @@
                 div.className = `log-entry log-${type} ${isFilterSwitch ? '' : 'new-item'}`;
                 div.id = `msg-${ev.id}`;
                 div.innerHTML = buildEventInnerHtml(ev);
-
-                // Если план активен, вставляем новые события НАД планом
-                if (activeTodoEvent && document.getElementById(`msg-${activeTodoEvent.id}`) && ev.id !== activeTodoEvent.id) {
-                    const planEl = document.getElementById(`msg-${activeTodoEvent.id}`);
-                    container.insertBefore(div, planEl);
-                } else {
-                    container.appendChild(div);
-                }
+                container.appendChild(div);
             });
 
             if (footerCount) {

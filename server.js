@@ -34,7 +34,18 @@ function addEvent(event) {
   // Deduplicate consecutive identical messages
   if (logEvents.length > 0) {
     const last = logEvents[logEvents.length - 1];
-    if (last.title === event.title && last.type === event.type && last.source === event.source) {
+    if (last.id === event.id && last.title === event.title) {
+      return;
+    }
+  }
+
+  // If this is an existing plan update with a matching planId or ID, update it IN-PLACE!
+  if (event.meta && event.meta.kind === 'todo_list') {
+    const targetPlanId = (event.meta && event.meta.planId) || event.id;
+    const existingIndex = logEvents.findIndex(e => e.id === targetPlanId || (e.meta && e.meta.planId === targetPlanId));
+    if (existingIndex !== -1) {
+      logEvents[existingIndex] = event;
+      broadcastPayload();
       return;
     }
   }
