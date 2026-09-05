@@ -1,15 +1,32 @@
 {
-  "name": "stream-overlay",
-  "version": "1.0.0",
-  "description": "",
+  "name": "streeam",
+  "version": "1.2.0",
+  "description": "Real-time AI developer stream HUD for OBS and browsers",
   "main": "server.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+  "bin": {
+    "streeam-log": "./cli/log.js",
+    "streeam-mcp": "./mcp/server.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "scripts": {
+    "test": "node test-suite.js",
+    "start": "node server.js",
+    "overlay:start": "./start.sh",
+    "overlay:stop": "./stop.sh",
+    "overlay:status": "./status.sh",
+    "cli:log": "node cli/log.js",
+    "mcp": "node mcp/server.js"
+  },
+  "keywords": [
+    "stream-overlay",
+    "obs",
+    "ai-agent",
+    "claude-code",
+    "codex",
+    "orca",
+    "tmux"
+  ],
+  "author": "Nick Zakharov",
+  "license": "MIT",
   "type": "commonjs",
   "dependencies": {
     "ws": "^8.21.3"
