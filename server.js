@@ -8,9 +8,11 @@ const PORT = process.env.STREAM_OVERLAY_PORT || 3333;
 const PUBLIC_DIR = path.join(__dirname, 'public');
 const MAX_LOGS = 80;
 
-let currentProject = 'MULTI-AGENT';
-let currentStatus = 'LIVE';
+let currentProject = 'ORCA DEV';
+let currentStatus = 'IDLE';
 let logEvents = [];
+let lastEventTimestamp = 0;
+let idleCheckTimer = null;
 
 const adapterManager = new AdapterManager();
 
@@ -44,22 +46,37 @@ function addEvent(event) {
     const targetPlanId = (event.meta && event.meta.planId) || event.id;
     const existingIndex = logEvents.findIndex(e => e.id === targetPlanId || (e.meta && e.meta.planId === targetPlanId));
     if (existingIndex !== -1) {
-      logEvents[existingIndex] = event;
+      logEvents[existingIndex] = { ...event, id: targetPlanId };
+      touchActivity(event.project);
       broadcastPayload();
       return;
     }
   }
 
-  currentStatus = 'ACTIVE';
-  if (event.project && event.project !== 'DEFAULT') {
-    currentProject = event.project;
-  }
+  touchActivity(event.project);
 
   logEvents.push(event);
   if (logEvents.length > MAX_LOGS) {
     logEvents.shift();
   }
   broadcastPayload();
+}
+
+function touchActivity(project) {
+  lastEventTimestamp = Date.now();
+  if (currentStatus !== 'ACTIVE') {
+    currentStatus = 'ACTIVE';
+  }
+  if (project && project !== 'DEFAULT') {
+    currentProject = project;
+  }
+
+  // Reset or start idle timeout (agent goes to IDLE if no events for 15s)
+  if (idleCheckTimer) clearTimeout(idleCheckTimer);
+  idleCheckTimer = setTimeout(() => {
+    currentStatus = 'IDLE';
+    broadcastPayload();
+  }, 15000);
 }
 
 adapterManager.on('event', (ev) => {

@@ -506,7 +506,7 @@
         <!-- Terminal Footer -->
         <div class="terminal-footer">
             <span id="footer-count">● 0 entries logged</span>
-            <span id="terminal-live-cursor"><span class="cursor"></span></span>
+            <span></span>
         </div>
     </div>
 
@@ -515,8 +515,9 @@
         let renderedEventIds = new Set();
         let activeFilter = 'all';
 
-        // Индикатор активности агента
-        let isAgentWorking = false;
+        // Синхронизированный статус агента с бэкенда
+        let backendStatus = 'ACTIVE';
+        let isAgentWorking = true;
         let lastActivityTime = Date.now();
 
         const container = document.getElementById('stream-container');
@@ -632,8 +633,8 @@
 
         setInterval(() => {
             const timeSinceLastActivity = Date.now() - lastActivityTime;
-            // Если активности не было больше 5 секунд, кот в покое
-            isAgentWorking = timeSinceLastActivity < 5000;
+            // Агент активен если статус с сервера ACTIVE либо последняя активность была в течение 14 сек
+            isAgentWorking = backendStatus === 'ACTIVE' || timeSinceLastActivity < 14000;
 
             if (isAgentWorking) {
                 bongoFrame = bongoFrame === 1 ? 2 : 1;
@@ -643,7 +644,7 @@
                 catImg.src = 'bongo-rest.png'; // Лапки спокойно лежат на столе
                 buddySpeech.innerText = 'chilling... 💤';
             }
-        }, 160); // Быстрая и бодрая печать лапками во время работы!
+        }, 160);
 
         function celebrateTask(cardEl) {
             triggerTargetedConfetti(cardEl);
@@ -730,12 +731,18 @@
                     if (data.project) {
                         projectTag.innerText = data.project.toUpperCase();
                     }
+                    if (data.status) {
+                        backendStatus = data.status;
+                        if (statusLabel) {
+                            statusLabel.innerText = data.status === 'ACTIVE' ? 'LIVE' : 'IDLE';
+                        }
+                    }
                     if (Array.isArray(data.events)) {
                         const prevCount = rawEvents.length;
                         rawEvents = data.events;
 
                         if (rawEvents.length > prevCount) {
-                            lastActivityTime = Date.now(); // Фиксируем активность
+                            lastActivityTime = Date.now();
                         }
 
                         renderEvents(false);

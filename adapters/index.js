@@ -53,10 +53,12 @@ class AdapterManager extends EventEmitter {
   // Allow external push (HTTP Webhook / CLI / MCP)
   ingest(rawPayload) {
     const event = createUnifiedEvent(rawPayload);
-    // Preserve explicit planId if passed from outside
-    if (rawPayload.meta && rawPayload.meta.planId) {
-      event.meta.planId = rawPayload.meta.planId;
-      event.id = rawPayload.meta.planId;
+    // Preserve explicit planId and meta payload from outside
+    if (rawPayload.meta) {
+      event.meta = { ...rawPayload.meta };
+      if (rawPayload.meta.planId) {
+        event.id = rawPayload.meta.planId;
+      }
     }
     if (this.rateLimiter.shouldBroadcast(event)) {
       this.emit('event', event);

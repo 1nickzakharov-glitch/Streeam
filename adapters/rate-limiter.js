@@ -14,8 +14,8 @@ class StreamRateLimiter {
 
     // Critical transitions ALWAYS broadcast immediately:
     // 1. User prompts
-    // 2. Sprint Plans and Todo Checklists
-    if (event.type === 'user' || event.type === 'plan' || (event.meta && event.meta.kind === 'todo_list')) {
+    // 2. Sprint Plans and Todo Checklists (including updates)
+    if (event.type === 'user' || (event.meta && event.meta.kind === 'todo_list')) {
       this.lastTimestamps.set(event.source, Date.now());
       return true;
     }
