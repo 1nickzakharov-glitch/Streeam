@@ -3,9 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Streeam — Live Terminal HUD</title>
+    <title>Streeam — Authentic Dev Terminal</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Geist+Mono:wght@300;400;500;600&display=swap');
+
+        :root {
+            --bg-term: #0b0d13;
+            --bg-header: #0f121b;
+            --border-dim: rgba(255, 255, 255, 0.07);
+            --border-subtle: rgba(255, 255, 255, 0.12);
+            --text-main: #d1d5db;        /* Natural readable light gray */
+            --text-dim: #6b7280;         /* Classic terminal muted gray */
+            --text-dark: #4b5563;
+            --user-cyan: #38bdf8;
+            --user-bg: rgba(56, 189, 248, 0.06);
+            --user-border: rgba(56, 189, 248, 0.18);
+            --green-done: #34d399;
+            --font-mono: 'Geist Mono', 'JetBrains Mono', -apple-system, BlinkMacSystemFont, monospace;
+        }
 
         * {
             box-sizing: border-box;
@@ -16,28 +31,33 @@
         html, body {
             width: 100%;
             height: 100%;
-            background-color: #07090e;
-            color: #e2e8f0;
-            font-family: 'JetBrains Mono', monospace;
+            background-color: transparent;
+            color: var(--text-main);
+            font-family: var(--font-mono);
             overflow: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
+        /* Strict Authentic Terminal Frame */
         .terminal-container {
             width: 100%;
             height: 100%;
             display: flex;
             flex-direction: column;
-            background: rgba(10, 12, 18, 0.96);
-            border: 1px solid rgba(34, 197, 94, 0.3);
-            box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.9), 0 0 25px rgba(34, 197, 94, 0.1);
+            background: var(--bg-term);
+            border: 1px solid var(--border-dim);
+            border-radius: 8px;
+            box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.85);
+            position: relative;
+            overflow: hidden;
         }
 
-        /* Header bar */
+        /* Terminal Window Bar */
         .terminal-header {
             flex-shrink: 0;
-            background: #0f121a;
-            padding: 10px 14px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            background: var(--bg-header);
+            padding: 9px 14px;
+            border-bottom: 1px solid var(--border-dim);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -46,7 +66,7 @@
         .header-left {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
         .window-dots {
@@ -56,37 +76,42 @@
         }
 
         .dot {
-            width: 9px;
-            height: 9px;
+            width: 8.5px;
+            height: 8.5px;
             border-radius: 50%;
+            opacity: 0.85;
         }
-        .dot-red { background: #ef4444; }
-        .dot-yellow { background: #eab308; }
-        .dot-green { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
+        .dot-red { background: #e06c75; }
+        .dot-yellow { background: #e5c07b; }
+        .dot-green { background: #98c379; }
 
         .terminal-title {
-            font-size: 11.5px;
-            font-weight: 700;
-            letter-spacing: 0.8px;
-            color: #cbd5e1;
-            text-transform: uppercase;
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            color: #9ca3af;
+        }
+
+        .prompt-symbol {
+            color: var(--text-dim);
+            margin-right: 2px;
         }
 
         .project-tag {
             font-size: 10px;
-            font-weight: 700;
+            font-weight: 500;
             padding: 1px 6px;
             border-radius: 3px;
-            background: rgba(56, 189, 248, 0.15);
-            color: #38bdf8;
-            border: 1px solid rgba(56, 189, 248, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+            color: #9ca3af;
+            border: 1px solid var(--border-dim);
             text-transform: uppercase;
         }
 
         .header-right {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
 
         .source-filters {
@@ -97,149 +122,349 @@
 
         .filter-btn {
             background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #64748b;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 9px;
-            font-weight: 700;
-            padding: 2px 6px;
+            border: 1px solid transparent;
+            color: #6b7280;
+            font-family: var(--font-mono);
+            font-size: 9.5px;
+            font-weight: 400;
+            padding: 1.5px 5px;
             border-radius: 3px;
             cursor: pointer;
-            text-transform: uppercase;
-            transition: all 0.15s ease;
+            transition: all 0.12s ease;
         }
 
-        .filter-btn:hover, .filter-btn.active {
-            border-color: #22c55e;
-            color: #22c55e;
-            background: rgba(34, 197, 94, 0.1);
+        .filter-btn:hover {
+            color: #d1d5db;
         }
 
-        .status-badge {
-            font-size: 9.5px;
-            font-weight: 800;
-            letter-spacing: 0.6px;
-            padding: 2px 7px;
-            border-radius: 3px;
-            text-transform: uppercase;
-            color: #22c55e;
-            background: rgba(34, 197, 94, 0.16);
-            border: 1px solid rgba(34, 197, 94, 0.35);
+        .filter-btn.active {
+            border-color: rgba(255, 255, 255, 0.15);
+            color: #f3f4f6;
+            background: rgba(255, 255, 255, 0.06);
         }
 
-        /* Dynamic scrolling terminal stream */
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #10b981;
+            box-shadow: 0 0 6px #10b981;
+        }
+
+        /* Stream Output */
         .terminal-stream {
             flex: 1;
-            padding: 16px;
+            padding: 14px 16px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 13px;
+            gap: 10px;
             scroll-behavior: smooth;
             scrollbar-width: none;
+            padding-bottom: 60px; /* Space so text doesn't hide behind pixel buddy */
         }
 
         .terminal-stream::-webkit-scrollbar {
             display: none;
         }
 
+        /* Clean Terminal Log Rows (NO colorful side stripes) */
         .log-entry {
             display: flex;
             flex-direction: column;
-            gap: 5px;
-            padding: 4px 8px 6px 12px;
-            border-left: 2.5px solid rgba(255, 255, 255, 0.12);
-            border-radius: 0 4px 4px 0;
-            animation: fadeIn 0.22s ease-out;
-            transition: background-color 0.15s ease;
+            gap: 3px;
+            padding: 3px 0;
+            animation: fadeIn 0.15s ease-out;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(6px); }
+            from { opacity: 0; transform: translateY(3px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
-        /* Semantic line accents */
-        .log-user { 
-            border-left-color: #38bdf8; 
-            /* Деликатная полупрозрачная подсветка сообщений пользователя */
-            background: rgba(56, 189, 248, 0.07);
-            border-top: 1px solid rgba(56, 189, 248, 0.12);
-            border-bottom: 1px solid rgba(56, 189, 248, 0.12);
-            border-right: 1px solid rgba(56, 189, 248, 0.12);
-        }
-        .log-plan { border-left-color: #a78bfa; }
-        .log-action { border-left-color: #facc15; }
-        .log-done { border-left-color: #22c55e; }
-        .log-system { border-left-color: #64748b; }
 
         .log-meta {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 7px;
+            font-size: 10px;
+            color: var(--text-dim);
+            font-weight: 400;
+        }
+
+        .time-text {
+            color: #4b5563;
+            font-size: 9.5px;
         }
 
         .badge {
             font-size: 9.5px;
-            font-weight: 800;
-            letter-spacing: 0.5px;
+            font-weight: 500;
+            letter-spacing: 0.3px;
             text-transform: uppercase;
-            padding: 1px 6px;
-            border-radius: 3px;
-        }
-        .badge-user { color: #38bdf8; background: rgba(56, 189, 248, 0.18); border: 1px solid rgba(56, 189, 248, 0.25); }
-        .badge-plan { color: #a78bfa; background: rgba(167, 139, 250, 0.14); }
-        .badge-action { color: #facc15; background: rgba(250, 204, 21, 0.14); }
-        .badge-done { color: #22c55e; background: rgba(34, 197, 94, 0.14); }
-        .badge-system { color: #94a3b8; background: rgba(148, 163, 184, 0.14); }
-
-        .time-text {
-            font-size: 10.5px;
-            color: #64748b;
+            padding: 0 4px;
+            border-radius: 2px;
+            background: rgba(255, 255, 255, 0.04);
+            color: #9ca3af;
         }
 
         .title-text {
-            font-size: 13.5px;
-            line-height: 1.5;
-            color: #f8fafc;
+            font-size: 12.5px;
+            line-height: 1.45;
+            color: #9ca3af; /* Clean quiet terminal gray by default */
+            font-weight: 400;
+            letter-spacing: -0.1px;
             word-break: break-word;
-            font-weight: 500;
+        }
+
+        /* 1. Distinct Translucent User Prompt */
+        .log-user {
+            background: var(--user-bg);
+            border: 1px solid var(--user-border);
+            border-radius: 4px;
+            padding: 7px 10px;
+            margin: 3px 0;
+        }
+
+        .log-user .badge {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--user-cyan);
         }
 
         .log-user .title-text {
-            color: #f0f9ff;
-            font-weight: 600;
+            color: #e0f2fe;
+            font-weight: 400;
         }
 
-        /* Footer */
-        .live-footer {
+        /* 2. Completed Step with Clean Checkmark */
+        .log-done .title-text {
+            color: #a7f3d0;
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+        }
+
+        .check-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 14px;
+            height: 14px;
+            margin-top: 2px;
             flex-shrink: 0;
-            padding: 7px 15px;
-            background: rgba(15, 18, 26, 0.85);
-            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            color: var(--green-done);
+        }
+
+        /* Terminal Footer */
+        .terminal-footer {
+            flex-shrink: 0;
+            padding: 6px 14px;
+            background: #0d1017;
+            border-top: 1px solid var(--border-dim);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            font-size: 10.5px;
-            color: #64748b;
+            font-size: 10px;
+            color: #6b7280;
         }
 
-        .pulse-cursor {
+        .cursor {
             display: inline-block;
-            width: 7px;
+            width: 6px;
             height: 12px;
-            background: #22c55e;
+            background: #9ca3af;
             vertical-align: middle;
             margin-left: 4px;
             animation: blink 1s step-start infinite;
         }
 
         @keyframes blink { 50% { opacity: 0; } }
+
+        /* ====================================================
+           PIXEL PET / CODING ROBOT BUDDY (Bottom Right Corner)
+           ==================================================== */
+        .pixel-buddy-container {
+            position: absolute;
+            bottom: 30px;
+            right: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .pixel-speech {
+            background: #1e2433;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 4px;
+            padding: 3px 6px;
+            font-size: 8.5px;
+            color: #93c5fd;
+            margin-bottom: 3px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            animation: floatBubble 2.5s ease-in-out infinite;
+            white-space: nowrap;
+        }
+
+        @keyframes floatBubble {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-2px); }
+        }
+
+        /* Pure CSS Pixel Robot Canvas */
+        .pixel-robot {
+            width: 44px;
+            height: 40px;
+            position: relative;
+            image-rendering: pixelated;
+        }
+
+        /* Monitor / Screen */
+        .robot-monitor {
+            position: absolute;
+            bottom: 0;
+            left: 2px;
+            width: 18px;
+            height: 14px;
+            background: #1f293d;
+            border: 1px solid #374151;
+            border-radius: 2px;
+        }
+        .monitor-screen {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            background: #0f172a;
+            overflow: hidden;
+        }
+        .monitor-code {
+            position: absolute;
+            top: 1px;
+            left: 1px;
+            width: 6px;
+            height: 1.5px;
+            background: #38bdf8;
+            box-shadow: 0 2.5px 0 #34d399, 0 5px 0 #a78bfa;
+            animation: typingCode 0.8s infinite steps(2);
+        }
+
+        @keyframes typingCode {
+            50% { width: 10px; }
+        }
+
+        /* Robot Body & Head */
+        .robot-head {
+            position: absolute;
+            bottom: 12px;
+            right: 6px;
+            width: 18px;
+            height: 15px;
+            background: #334155;
+            border: 1px solid #475569;
+            border-radius: 3px;
+            animation: bobHead 1.4s ease-in-out infinite;
+        }
+
+        .robot-antenna {
+            position: absolute;
+            top: -5px;
+            left: 7px;
+            width: 2px;
+            height: 4px;
+            background: #64748b;
+        }
+        .robot-antenna::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -1px;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #38bdf8;
+            box-shadow: 0 0 5px #38bdf8;
+            animation: antennaGlow 1.2s infinite;
+        }
+
+        @keyframes antennaGlow {
+            50% { background: #34d399; box-shadow: 0 0 7px #34d399; }
+        }
+
+        .robot-eyes {
+            position: absolute;
+            top: 4px;
+            left: 3px;
+            display: flex;
+            gap: 4px;
+        }
+
+        .robot-eye {
+            width: 3px;
+            height: 3px;
+            background: #38bdf8;
+            border-radius: 1px;
+            box-shadow: 0 0 3px #38bdf8;
+            animation: blinkEyes 3.5s infinite;
+        }
+
+        @keyframes blinkEyes {
+            0%, 96%, 100% { transform: scaleY(1); }
+            98% { transform: scaleY(0.1); }
+        }
+
+        /* Robot Body & Typing Hands */
+        .robot-body {
+            position: absolute;
+            bottom: 0;
+            right: 8px;
+            width: 14px;
+            height: 12px;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 2px;
+        }
+
+        .robot-arm {
+            position: absolute;
+            bottom: 4px;
+            left: 17px;
+            width: 8px;
+            height: 3px;
+            background: #475569;
+            border-radius: 1px;
+            animation: typingHand 0.25s infinite alternate ease-in-out;
+        }
+
+        @keyframes typingHand {
+            0% { transform: rotate(-8deg) translateY(0); }
+            100% { transform: rotate(12deg) translateY(2px); }
+        }
+
+        @keyframes bobHead {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-1.5px); }
+        }
+
+        /* Confetti Canvas */
+        #confetti-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 99;
+        }
     </style>
 </head>
 <body>
     <div class="terminal-container">
-        <!-- Terminal Header -->
+        <!-- Confetti layer for milestone celebration -->
+        <canvas id="confetti-canvas"></canvas>
+
+        <!-- Terminal Topbar -->
         <div class="terminal-header">
             <div class="header-left">
                 <div class="window-dots">
@@ -247,41 +472,71 @@
                     <div class="dot dot-yellow"></div>
                     <div class="dot dot-green"></div>
                 </div>
-                <span class="terminal-title">STREEAM DEV LOG</span>
+                <span class="terminal-title"><span class="prompt-symbol">❯</span> streeam</span>
                 <span class="project-tag" id="project-tag">MULTI-AGENT</span>
             </div>
             <div class="header-right">
                 <div class="source-filters">
-                    <button class="filter-btn active" onclick="setFilter('all')">ALL</button>
-                    <button class="filter-btn" onclick="setFilter('pi')">ORCA</button>
-                    <button class="filter-btn" onclick="setFilter('claude')">CLAUDE</button>
-                    <button class="filter-btn" onclick="setFilter('codex')">CODEX</button>
-                    <button class="filter-btn" onclick="setFilter('tmux')">TMUX</button>
+                    <button class="filter-btn active" onclick="setFilter('all')">all</button>
+                    <button class="filter-btn" onclick="setFilter('pi')">orca</button>
+                    <button class="filter-btn" onclick="setFilter('claude')">claude</button>
+                    <button class="filter-btn" onclick="setFilter('codex')">codex</button>
+                    <button class="filter-btn" onclick="setFilter('tmux')">tmux</button>
                 </div>
-                <span class="status-badge" id="status-badge">LIVE STREAM</span>
+                <div class="status-dot" title="Stream Active"></div>
             </div>
         </div>
 
-        <!-- Dynamic Event Stream -->
+        <!-- Terminal Output Stream -->
         <div class="terminal-stream" id="stream-container">
-            <!-- Log entries -->
+            <!-- Dynamic entries -->
         </div>
 
-        <!-- Live Footer -->
-        <div class="live-footer">
-            <span id="footer-count">● MULTI-AGENT DEV FEED</span>
-            <span>AUTO-SCROLL <span class="pulse-cursor"></span></span>
+        <!-- Animated Pixel Robot Buddy in bottom right corner -->
+        <div class="pixel-buddy-container">
+            <div class="pixel-speech" id="buddy-speech">coding...</div>
+            <div class="pixel-robot">
+                <div class="robot-monitor">
+                    <div class="monitor-screen">
+                        <div class="monitor-code"></div>
+                    </div>
+                </div>
+                <div class="robot-body"></div>
+                <div class="robot-arm"></div>
+                <div class="robot-head">
+                    <div class="robot-antenna"></div>
+                    <div class="robot-eyes">
+                        <div class="robot-eye"></div>
+                        <div class="robot-eye"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Terminal Footer -->
+        <div class="terminal-footer">
+            <span id="footer-count">● 0 events recorded</span>
+            <span>ready <span class="cursor"></span></span>
         </div>
     </div>
 
     <script>
         let rawEvents = [];
         let activeFilter = 'all';
+        let lastEventCount = 0;
 
         const container = document.getElementById('stream-container');
         const projectTag = document.getElementById('project-tag');
-        const statusBadge = document.getElementById('status-badge');
         const footerCount = document.getElementById('footer-count');
+        const buddySpeech = document.getElementById('buddy-speech');
+
+        // Elegant SVG Checkmark (never ugly default emojis)
+        const checkSvg = `
+            <svg class="check-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="8" cy="8" r="7" stroke="#10b981" stroke-width="1.3" fill="rgba(16, 185, 129, 0.1)"/>
+                <path d="M4.8 8.2L6.9 10.3L11.2 5.8" stroke="#10b981" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        `;
 
         function setFilter(source) {
             activeFilter = source;
@@ -302,21 +557,36 @@
                 const type = ev.type || 'action';
                 const div = document.createElement('div');
                 div.className = `log-entry log-${type}`;
-                
+
+                const badgeText = ev.badge || (type === 'user' ? 'PROMPT' : 'ACTION');
+                const isDone = type === 'done';
+
                 div.innerHTML = `
                     <div class="log-meta">
-                        <span class="badge badge-${type}">${ev.badge || type.toUpperCase()}</span>
+                        <span class="badge">${badgeText}</span>
                         <span class="time-text">${ev.time || ''}</span>
                     </div>
-                    <div class="title-text">${escapeHtml(ev.title || '')}</div>
+                    <div class="title-text">${isDone ? checkSvg : ''}${escapeHtml(ev.title || '')}</div>
                 `;
                 container.appendChild(div);
             });
 
             if (footerCount) {
-                footerCount.innerText = `● MULTI-AGENT DEV FEED (${filtered.length} EVENTS)`;
+                footerCount.innerText = `● ${filtered.length} entries streamed`;
             }
+
             container.scrollTop = container.scrollHeight;
+
+            // Check if latest event is done -> trigger micro confetti celebration
+            if (rawEvents.length > lastEventCount && rawEvents.length > 0) {
+                const latest = rawEvents[rawEvents.length - 1];
+                if (latest.type === 'done') {
+                    triggerMiniConfetti();
+                    if (buddySpeech) buddySpeech.innerText = 'milestone reached! ✨';
+                    setTimeout(() => { if (buddySpeech) buddySpeech.innerText = 'coding...'; }, 3500);
+                }
+            }
+            lastEventCount = rawEvents.length;
         }
 
         function escapeHtml(str) {
@@ -327,6 +597,61 @@
                 .replace(/"/g, '&quot;');
         }
 
+        // ============================================
+        // Subtle Tasteful Canvas Confetti
+        // ============================================
+        const canvas = document.getElementById('confetti-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function triggerMiniConfetti() {
+            const colors = ['#38bdf8', '#34d399', '#a78bfa', '#facc15', '#f472b6'];
+            for (let i = 0; i < 28; i++) {
+                particles.push({
+                    x: canvas.width / 2 + (Math.random() * 80 - 40),
+                    y: canvas.height * 0.4 + (Math.random() * 40 - 20),
+                    vx: (Math.random() - 0.5) * 4.5,
+                    vy: (Math.random() - 1.2) * 4,
+                    size: Math.random() * 3.5 + 2,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    alpha: 1,
+                    decay: Math.random() * 0.02 + 0.015,
+                });
+            }
+            if (particles.length <= 28) animateConfetti();
+        }
+
+        function animateConfetti() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach((p, idx) => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += 0.08; // gravity
+                p.alpha -= p.decay;
+
+                if (p.alpha <= 0) {
+                    particles.splice(idx, 1);
+                } else {
+                    ctx.fillStyle = p.color;
+                    ctx.globalAlpha = p.alpha;
+                    ctx.fillRect(p.x, p.y, p.size, p.size);
+                }
+            });
+
+            if (particles.length > 0) {
+                requestAnimationFrame(animateConfetti);
+            } else {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+
         function connect() {
             const ws = new WebSocket('ws://' + window.location.host + '/ws');
 
@@ -334,7 +659,6 @@
                 try {
                     const data = JSON.parse(e.data);
                     if (data.project) projectTag.innerText = data.project;
-                    if (data.status) statusBadge.innerText = data.status === 'ACTIVE' ? 'STREAM LIVE' : data.status;
                     if (Array.isArray(data.events)) {
                         rawEvents = data.events;
                         render();
