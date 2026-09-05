@@ -23,7 +23,6 @@
             --user-bg: rgba(0, 210, 255, 0.16);
             --green-bg: rgba(16, 185, 129, 0.14);
             
-            /* ЕДИНЫЙ ШРИФТ ДЛЯ ВСЕХ СООБЩЕНИЙ И ПЛАНОВ */
             --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Inter", sans-serif;
             --font-code: "SF Mono", Menlo, Monaco, monospace;
         }
@@ -55,7 +54,7 @@
             overflow: hidden;
         }
 
-        /* Верхняя панель с официальным логотипом Streeam */
+        /* Верхняя панель */
         .terminal-header {
             flex-shrink: 0;
             background: var(--bg-header);
@@ -185,26 +184,20 @@
         }
 
         /* 
-           ОСНОВНАЯ ОБЛАСТЬ:
-           Включает скроллируемый поток сообщений и закрепленный снизу активный план
+           ЛЕНТА СООБЩЕНИЙ:
+           Единый поток. План органично находится в ленте без лишних рамок и теней
         */
-        .terminal-content-area {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            position: relative;
-        }
-
         .terminal-stream {
             flex: 1;
-            padding: 20px 20px 10px 20px;
+            padding: 20px 20px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
             gap: 24px;
             scroll-behavior: smooth;
             scrollbar-width: none;
+            padding-bottom: 120px;
+            position: relative;
         }
 
         .terminal-stream::-webkit-scrollbar {
@@ -315,29 +308,15 @@
         }
 
         /* 
-           ЗАКРЕПЛЕННЫЙ СНИЗУ АКТИВНЫЙ ПЛАН (ПОКА НЕ ВЫПОЛНЕН)
-           Шрифт ТОЧНО ТАКОЙ ЖЕ как во всем интерфейсе!
+           БЕСШОВНЫЙ ПЛАН БЕЗ ВЫЧУРНОГО ФОНА И ТЕНЕЙ (органично прямо в терминале)
         */
-        .pinned-plan-container {
-            flex-shrink: 0;
-            padding: 10px 20px 14px 20px;
-            background: rgba(5, 7, 10, 0.95);
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-            position: relative;
-            z-index: 15;
-            box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.85);
-            display: none; /* Отображается динамически, когда план активен */
-        }
-
-        .todo-card {
-            padding: 10px 14px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 6px;
+        .todo-inline-plan {
             display: flex;
             flex-direction: column;
             gap: 6px;
-            font-family: var(--font-ui); /* ЕДИНЫЙ ЧИСТЫЙ ШРИФТ */
+            font-family: var(--font-ui);
             font-size: 13px;
+            margin-top: 4px;
         }
 
         .todo-top-line {
@@ -348,7 +327,7 @@
         }
 
         .todo-badge-title {
-            color: #94a3b8;
+            color: #c084fc;
             font-weight: 700;
             font-size: 11.5px;
             text-transform: uppercase;
@@ -357,7 +336,7 @@
 
         .todo-progress-count {
             color: #38bdf8;
-            font-size: 12px;
+            font-size: 11.5px;
             font-weight: 600;
             font-family: var(--font-code);
         }
@@ -366,7 +345,7 @@
             color: #00d2ff;
             font-weight: 600;
             font-size: 13.5px;
-            margin-bottom: 3px;
+            margin-bottom: 4px;
         }
 
         .todo-item-row {
@@ -398,12 +377,11 @@
             flex-shrink: 0;
         }
 
-        /* Нижняя строка терминала */
+        /* Нижняя строка */
         .terminal-footer {
             flex-shrink: 0;
             padding: 8px 20px;
             background: #030304;
-            border-top: 1px solid rgba(255, 255, 255, 0.06);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -426,45 +404,17 @@
         @keyframes blink { 50% { opacity: 0; } }
 
         /* =========================================================
-           ПИТОМЕЦ С ПЕРЕКЛЮЧАТЕЛЕМ КОТОВ (В ПРАВОМ НИЖНЕМ УГЛУ)
+           BONGO CAT (БЫСТРЫЙ ПРИ РАБОТЕ, В ПОКОЕ КОГДА НЕТ ДЕЙСТВИЙ)
            ========================================================= */
         .pixel-buddy-wrapper {
             position: absolute;
-            bottom: 28px;
-            right: 18px;
+            bottom: 22px;
+            right: 20px;
             display: flex;
             flex-direction: column;
             align-items: flex-end;
-            z-index: 40;
-        }
-
-        .cat-switcher {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            margin-bottom: 4px;
-            background: #11131a;
-            border-radius: 4px;
-            padding: 2px;
-            pointer-events: auto;
-        }
-
-        .cat-switch-btn {
-            background: transparent;
-            border: none;
-            color: #71717a;
-            font-family: var(--font-code);
-            font-size: 9px;
-            padding: 2px 5px;
-            border-radius: 3px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.15s ease;
-        }
-
-        .cat-switch-btn.active {
-            background: #2563eb;
-            color: #ffffff;
+            pointer-events: none;
+            z-index: 30;
         }
 
         .pet-speech-cloud {
@@ -486,11 +436,11 @@
         }
 
         #cat-sprite-img {
-            width: 108px;
-            height: 75px;
+            width: 105px;
+            height: 62px;
             object-fit: contain;
-            image-rendering: pixelated;
             filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.9));
+            transition: transform 0.1s ease;
         }
 
         /* Canvas Confetti */
@@ -507,7 +457,7 @@
 </head>
 <body>
     <div class="terminal-container">
-        <!-- Canvas конфетти прямо поверх сообщений -->
+        <!-- Confetti layer for milestone celebration -->
         <canvas id="confetti-canvas"></canvas>
 
         <!-- Header с официальным логотипом STREEAM с лендинга -->
@@ -519,6 +469,7 @@
                     <div class="dot dot-green"></div>
                 </div>
 
+                <!-- Официальный логотип Streeam с лендинга nicktries.com -->
                 <div class="brand-block">
                     <img class="brand-logo-img" src="streeam-logo.svg" alt="Streeam Logo" />
                     <span class="brand-text">STREEAM</span>
@@ -536,32 +487,20 @@
                 </div>
                 <div class="status-pill">
                     <span class="status-dot"></span>
-                    <span class="status-text">LIVE</span>
+                    <span class="status-text" id="status-label">LIVE</span>
                 </div>
             </div>
         </div>
 
-        <!-- Контентная зона: сообщения приходят сверху, а план зафиксирован снизу -->
-        <div class="terminal-content-area">
-            <!-- Scrollable Terminal Stream (сообщения идут НАД планом) -->
-            <div class="terminal-stream" id="stream-container">
-                <!-- Dynamic log entries -->
-            </div>
-
-            <!-- ЗАКРЕПЛЕННЫЙ СНИЗУ АКТИВНЫЙ ПЛАН (ПОКА НЕ ВЫПОЛНЕН) -->
-            <div class="pinned-plan-container" id="pinned-plan-box">
-                <!-- Injected dynamically -->
-            </div>
+        <!-- Terminal Stream (Единая чистая лента сообщений и плана) -->
+        <div class="terminal-stream" id="stream-container">
+            <!-- Dynamic entries -->
         </div>
 
-        <!-- Переключатель котиков: Вариант 1 (Bongo Cat) или Вариант 4 (Black Neko) -->
+        <!-- Bongo Cat Companion -->
         <div class="pixel-buddy-wrapper">
-            <div class="cat-switcher">
-                <button class="cat-switch-btn" id="btn-bongo" onclick="chooseCat('bongo')">1. Bongo</button>
-                <button class="cat-switch-btn active" id="btn-black" onclick="chooseCat('black')">4. Black Neko</button>
-            </div>
-            <div class="pet-speech-cloud" id="buddy-speech">coding live... ⚡</div>
-            <img id="cat-sprite-img" src="black-typing-1.png" alt="Stream Pet" />
+            <div class="pet-speech-cloud" id="buddy-speech">ready... ⚡</div>
+            <img id="cat-sprite-img" src="bongo-rest.png" alt="Bongo Cat" />
         </div>
 
         <!-- Terminal Footer -->
@@ -575,14 +514,14 @@
         let rawEvents = [];
         let renderedEventIds = new Set();
         let activeFilter = 'all';
-        let currentCatChoice = 'black'; // 'black' или 'bongo'
 
-        // Текущее состояние активного плана
-        let activeTodoPlan = null;
+        // Индикатор активности агента
+        let isAgentWorking = false;
+        let lastActivityTime = Date.now();
 
         const container = document.getElementById('stream-container');
-        const pinnedPlanBox = document.getElementById('pinned-plan-box');
         const projectTag = document.getElementById('project-tag');
+        const statusLabel = document.getElementById('status-label');
         const footerCount = document.getElementById('footer-count');
         const buddySpeech = document.getElementById('buddy-speech');
         const catImg = document.getElementById('cat-sprite-img');
@@ -593,12 +532,6 @@
                 <path d="M4.8 8.2L6.9 10.3L11.2 5.8" stroke="#10b981" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
         `;
-
-        function chooseCat(choice) {
-            currentCatChoice = choice;
-            document.getElementById('btn-bongo').classList.toggle('active', choice === 'bongo');
-            document.getElementById('btn-black').classList.toggle('active', choice === 'black');
-        }
 
         function setFilter(source) {
             activeFilter = source;
@@ -611,55 +544,53 @@
             renderEvents(true);
         }
 
-        // Рендер без моргания
+        // Рендер БЕЗ моргания
         function renderEvents(isFilterSwitch = false) {
             const filtered = activeFilter === 'all'
                 ? rawEvents
                 : rawEvents.filter(ev => ev.source === activeFilter || (activeFilter === 'pi' && (ev.source === 'orca' || ev.source === 'pi')));
 
-            filtered.forEach(ev => {
-                // Если это событие плана (todo_list), проверяем активен ли он или завершен
+            // Проверяем, есть ли активный Todo-план
+            let activeTodoEvent = null;
+            for (let i = filtered.length - 1; i >= 0; i--) {
+                const ev = filtered[i];
                 if (ev.meta && ev.meta.kind === 'todo_list' && Array.isArray(ev.meta.items)) {
-                    const allDone = ev.meta.items.every(i => i.done);
-                    if (!allDone) {
-                        // План еще выполняется: фиксируем его снизу!
-                        activeTodoPlan = ev;
-                        updatePinnedPlan(ev);
-                        return; // Не добавляем его в общий поток пока не выполнен
-                    } else {
-                        // План полностью выполнен: скрываем из низа и пускаем в обычный поток
-                        if (activeTodoPlan && activeTodoPlan.id === ev.id) {
-                            pinnedPlanBox.style.display = 'none';
-                            activeTodoPlan = null;
-                        }
-                    }
+                    activeTodoEvent = ev;
+                    break;
+                }
+            }
+
+            filtered.forEach(ev => {
+                // Если существует один активный план, не дублируем его старые копии
+                if (activeTodoEvent && ev.meta && ev.meta.kind === 'todo_list' && ev.id !== activeTodoEvent.id) {
+                    return;
                 }
 
-                if (renderedEventIds.has(ev.id)) return;
+                if (renderedEventIds.has(ev.id)) {
+                    // Если план обновился (галочка добавилась), обновляем его содержимое in-place
+                    if (ev.meta && ev.meta.kind === 'todo_list') {
+                        const existingEl = document.getElementById(`msg-${ev.id}`);
+                        if (existingEl) {
+                            existingEl.innerHTML = buildEventInnerHtml(ev);
+                        }
+                    }
+                    return;
+                }
 
                 renderedEventIds.add(ev.id);
                 const type = ev.type || 'action';
                 const div = document.createElement('div');
                 div.className = `log-entry log-${type} ${isFilterSwitch ? '' : 'new-item'}`;
                 div.id = `msg-${ev.id}`;
+                div.innerHTML = buildEventInnerHtml(ev);
 
-                const badgeText = ev.badge || (type === 'user' ? 'USER PROMPT' : 'AGENT ACTION');
-                const isDone = type === 'done';
-
-                let todoHtml = '';
-                if (ev.meta && ev.meta.kind === 'todo_list' && Array.isArray(ev.meta.items)) {
-                    todoHtml = renderTodoCardHtml(ev);
+                // Если план активен, вставляем новые события НАД планом
+                if (activeTodoEvent && document.getElementById(`msg-${activeTodoEvent.id}`) && ev.id !== activeTodoEvent.id) {
+                    const planEl = document.getElementById(`msg-${activeTodoEvent.id}`);
+                    container.insertBefore(div, planEl);
+                } else {
+                    container.appendChild(div);
                 }
-
-                div.innerHTML = `
-                    <div class="log-meta">
-                        <span class="badge badge-${type}">${badgeText}</span>
-                        <span class="time-text">${ev.time || ''}</span>
-                    </div>
-                    <div class="title-text">${isDone ? checkSvg : ''}${escapeHtml(ev.title || '')}</div>
-                    ${todoHtml}
-                `;
-                container.appendChild(div);
             });
 
             if (footerCount) {
@@ -669,34 +600,43 @@
             container.scrollTop = container.scrollHeight;
         }
 
-        // Рендер HTML карточки плана с единым шрифтом
-        function renderTodoCardHtml(ev) {
-            const doneCount = ev.meta.items.filter(i => i.done).length;
-            const totalCount = ev.meta.items.length;
+        function buildEventInnerHtml(ev) {
+            const type = ev.type || 'action';
+            const badgeText = ev.badge || (type === 'user' ? 'USER PROMPT' : 'AGENT ACTION');
+            const isDone = type === 'done';
 
-            const itemsHtml = ev.meta.items.map(it => `
-                <div class="todo-item-row ${it.done ? 'done' : 'pending'}">
-                    <span class="${it.done ? 'todo-icon-check' : 'todo-icon-circle'}">${it.done ? '✓' : '○'}</span>
-                    <span>${escapeHtml(it.text)}</span>
-                </div>
-            `).join('');
+            let todoHtml = '';
+            if (ev.meta && ev.meta.kind === 'todo_list' && Array.isArray(ev.meta.items)) {
+                const doneCount = ev.meta.items.filter(i => i.done).length;
+                const totalCount = ev.meta.items.length;
+
+                const itemsHtml = ev.meta.items.map(it => `
+                    <div class="todo-item-row ${it.done ? 'done' : 'pending'}">
+                        <span class="${it.done ? 'todo-icon-check' : 'todo-icon-circle'}">${it.done ? '✓' : '○'}</span>
+                        <span>${escapeHtml(it.text)}</span>
+                    </div>
+                `).join('');
+
+                todoHtml = `
+                    <div class="todo-inline-plan">
+                        <div class="todo-top-line">
+                            <span class="todo-badge-title">Active Plan</span>
+                            <span class="todo-progress-count">${doneCount}/${totalCount} done</span>
+                        </div>
+                        <div class="todo-phase-name">${escapeHtml(ev.meta.phase || 'Current Sprint')}</div>
+                        ${itemsHtml}
+                    </div>
+                `;
+            }
 
             return `
-                <div class="todo-card">
-                    <div class="todo-top-line">
-                        <span class="todo-badge-title">Todo Plan</span>
-                        <span class="todo-progress-count">${doneCount}/${totalCount} done</span>
-                    </div>
-                    <div class="todo-phase-name">${escapeHtml(ev.meta.phase || 'Active Sprint')}</div>
-                    ${itemsHtml}
+                <div class="log-meta">
+                    <span class="badge badge-${type}">${badgeText}</span>
+                    <span class="time-text">${ev.time || ''}</span>
                 </div>
+                <div class="title-text">${isDone ? checkSvg : ''}${escapeHtml(ev.title || '')}</div>
+                ${todoHtml}
             `;
-        }
-
-        // Обновление зафиксированного снизу плана
-        function updatePinnedPlan(ev) {
-            pinnedPlanBox.style.display = 'block';
-            pinnedPlanBox.innerHTML = renderTodoCardHtml(ev);
         }
 
         function escapeHtml(str) {
@@ -708,29 +648,35 @@
         }
 
         // =======================================================
-        // ПЛАВНАЯ СПОКОЙНАЯ АНИМАЦИЯ КОТИКА
+        // BONGO CAT: БЫСТРЫЙ ПРИ РАБОТЕ (160ms), В ПОКОЕ ПРИ IDLE
         // =======================================================
-        let petFrame = 1;
+        let bongoFrame = 1;
 
         setInterval(() => {
-            petFrame = petFrame === 1 ? 2 : 1;
-            if (currentCatChoice === 'bongo') {
-                catImg.src = petFrame === 1 ? 'bongo-frame1.png' : 'bongo-frame2.png';
+            const timeSinceLastActivity = Date.now() - lastActivityTime;
+            // Если активности не было больше 5 секунд, кот в покое
+            isAgentWorking = timeSinceLastActivity < 5000;
+
+            if (isAgentWorking) {
+                bongoFrame = bongoFrame === 1 ? 2 : 1;
+                catImg.src = bongoFrame === 1 ? 'bongo-frame1.png' : 'bongo-frame2.png';
+                buddySpeech.innerText = 'coding live... ⚡';
             } else {
-                catImg.src = petFrame === 1 ? 'black-typing-1.png' : 'black-typing-2.png';
+                catImg.src = 'bongo-rest.png'; // Лапки спокойно лежат на столе
+                buddySpeech.innerText = 'idle / waiting ☕';
             }
-        }, 480);
+        }, 160); // Быстрая и бодрая печать лапками во время работы!
 
         function celebrateTask(cardEl) {
             triggerTargetedConfetti(cardEl);
             if (buddySpeech) buddySpeech.innerText = 'milestone finished! 🎉';
             setTimeout(() => {
-                if (buddySpeech) buddySpeech.innerText = 'coding live... ⚡';
+                if (buddySpeech) buddySpeech.innerText = isAgentWorking ? 'coding live... ⚡' : 'idle / waiting ☕';
             }, 4000);
         }
 
         // ============================================
-        // ТАРГЕТИРОВАННЫЕ КОНФЕТТИ ИМЕННО У СООБЩЕНИЯ
+        // ТАРГЕТИРОВАННЫЕ КОНФЕТТИ
         // ============================================
         const canvas = document.getElementById('confetti-canvas');
         const ctx = canvas.getContext('2d');
@@ -755,7 +701,6 @@
             }
 
             const colors = ['#00d2ff', '#10b981', '#c084fc', '#facc15', '#f43f5e', '#ffffff'];
-            // 75 праздничных частиц, взлетающих прямо от сообщения
             for (let i = 0; i < 75; i++) {
                 const angle = Math.random() * Math.PI * 2;
                 const speed = 2.5 + Math.random() * 6;
@@ -810,6 +755,11 @@
                     if (Array.isArray(data.events)) {
                         const prevCount = rawEvents.length;
                         rawEvents = data.events;
+
+                        if (rawEvents.length > prevCount) {
+                            lastActivityTime = Date.now(); // Фиксируем активность
+                        }
+
                         renderEvents(false);
 
                         if (rawEvents.length > prevCount && rawEvents.length > 0) {
