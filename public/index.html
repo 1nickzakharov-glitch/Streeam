@@ -14,12 +14,11 @@
             --text-main: #e4e4e7;
             --text-meta: rgba(255, 255, 255, 0.40);
             
-            /* Яркие сочные цвета префиксов без плашек */
             --color-user: #00d2ff;   /* Яркий голубой */
-            --color-plan: #c084fc;   /* Яркий фиолетовый для мыслей */
-            --color-action: #facc15; /* Яркий сочный желтый для действий */
-            --color-done: #34d399;   /* Яркий зеленый для завершения */
-            --color-system: #f87171; /* Яркий красный для системных/окружения */
+            --color-plan: #c084fc;   /* Яркий фиолетовый */
+            --color-action: #facc15; /* Яркий желтый */
+            --color-done: #34d399;   /* Яркий зеленый */
+            --color-system: #f87171; /* Яркий красный */
 
             --user-bg: rgba(0, 210, 255, 0.16);
             --green-bg: rgba(16, 185, 129, 0.14);
@@ -163,7 +162,7 @@
 
         /* 
            ЛЕНТА СООБЩЕНИЙ:
-           Базовый отступ 20px. Все блоки выровнены строго по левой координате!
+           Идеальное ровное выравнивание по левой вертикальной линии
         */
         .terminal-stream {
             flex: 1;
@@ -174,14 +173,13 @@
             gap: 20px;
             scroll-behavior: smooth;
             scrollbar-width: none;
-            padding-bottom: 120px;
+            padding-bottom: 125px;
         }
 
         .terminal-stream::-webkit-scrollbar {
             display: none;
         }
 
-        /* Обычные записи: 14px отступ совпадает с внутренним текстом плашки пользователя */
         .log-entry {
             display: flex;
             flex-direction: column;
@@ -196,7 +194,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Мета-строка */
         .log-meta {
             display: flex;
             align-items: center;
@@ -212,18 +209,16 @@
             font-family: var(--font-code);
         }
 
-        /* ЧИСТЫЙ ЯРКИЙ ЦВЕТНОЙ ПРЕФИКС БЕЗ КАКИХ-ЛИБО ПЛАШЕК */
         .badge {
             font-size: 10.5px;
             font-weight: 700;
             letter-spacing: 0.4px;
             text-transform: uppercase;
             padding: 0;
-            background: transparent !important; /* Никаких плашек */
+            background: transparent !important;
             border-radius: 0;
         }
 
-        /* Цветовая дифференциация префиксов */
         .badge-user { color: var(--color-user); }
         .badge-plan { color: var(--color-plan); }
         .badge-action { color: var(--color-action); }
@@ -241,7 +236,6 @@
             margin: 0;
         }
 
-        /* Сообщение пользователя: мягкая заливка */
         .log-user {
             background: var(--user-bg);
             border-radius: 8px;
@@ -260,7 +254,6 @@
             font-size: 14.5px;
         }
 
-        /* Завершенный шаг */
         .log-done .title-text {
             color: #6ee7b7;
             display: flex;
@@ -303,12 +296,12 @@
         @keyframes blink { 50% { opacity: 0; } }
 
         /* =========================================================
-           16-BIT REALISTIC PIXEL ART CAT (Canvas Rendered)
+           CALM, ADORABLE BIG-EYED PIXEL CAT (Smooth 16-bit Canvas)
            ========================================================= */
         .pixel-buddy-wrapper {
             position: absolute;
-            bottom: 24px;
-            right: 22px;
+            bottom: 22px;
+            right: 20px;
             display: flex;
             flex-direction: column;
             align-items: flex-end;
@@ -326,19 +319,19 @@
             margin-bottom: 4px;
             white-space: nowrap;
             box-shadow: 0 4px 14px rgba(0, 0, 0, 0.85);
-            animation: petBounce 3s ease-in-out infinite;
+            animation: petBounce 3.6s ease-in-out infinite;
         }
 
         @keyframes petBounce {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-2.5px); }
+            50% { transform: translateY(-2px); }
         }
 
         #cat-canvas {
-            width: 120px;
-            height: 90px;
+            width: 128px;
+            height: 96px;
             image-rendering: pixelated;
-            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.9));
+            filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.9));
         }
 
         /* Canvas Confetti */
@@ -383,15 +376,15 @@
             </div>
         </div>
 
-        <!-- Terminal Stream (идеальное выравнивание по левой линии) -->
+        <!-- Terminal Stream -->
         <div class="terminal-stream" id="stream-container">
             <!-- Dynamic entries -->
         </div>
 
-        <!-- Реалистичный пиксельный котик, отрисовываемый пиксель-в-пиксель на канвасе -->
+        <!-- Живой, плавный, милый котик с большими выразительными глазами -->
         <div class="pixel-buddy-wrapper">
             <div class="pet-speech-cloud" id="buddy-speech">typing code... ⚡</div>
-            <canvas id="cat-canvas" width="120" height="90"></canvas>
+            <canvas id="cat-canvas" width="128" height="96"></canvas>
         </div>
 
         <!-- Terminal Footer -->
@@ -411,7 +404,6 @@
         const footerCount = document.getElementById('footer-count');
         const buddySpeech = document.getElementById('buddy-speech');
 
-        // Минималистичная SVG галочка с мягкой заливкой БЕЗ обводки
         const checkSvg = `
             <svg class="check-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="8" cy="8" r="8" fill="rgba(16, 185, 129, 0.2)"/>
@@ -477,128 +469,135 @@
                 .replace(/"/g, '&quot;');
         }
 
-        // ============================================
-        // 16-BIT REALISTIC PIXEL CAT RENDERER
-        // ============================================
+        // =======================================================
+        // CALM, ADORABLE BIG-EYED PIXEL CAT RENDERER (SLOW PACED)
+        // =======================================================
         const catCanvas = document.getElementById('cat-canvas');
         const catCtx = catCanvas.getContext('2d');
         catCtx.imageSmoothingEnabled = false;
 
         let animTick = 0;
 
+        // Котик с большими выразительными кошачьими глазами и мягкой анатомией
+        // s: шерсть, d: темная шерсть, p: розовые ушки, W: белок, K: большой зрачок, C: блик, n: носик, m: мордочка, R: щечки, t: хвост
         const CAT_FRAMES = [
-            // Frame 0 (Typing left paw down)
+            // Frame 0: Left paw typing
             [
-                "........ssss........ssss........",
-                ".......sppppsssssssspppps.......",
-                ".......sppppsssssssspppps.......",
-                "......ssssssssssssssssssss......",
-                "......ssssssssssssssssssss......",
-                "......ssWWWWssssssssWWWWss......",
-                "......ssWWKKssssssssWWKKss......",
-                "......ssWWCCssssssssWWCCss......",
-                "......ssssssssssnsssssssss......",
-                "......sRRsssssmmmmmssssRRs......",
-                ".......ssssssssssssssssss.......",
-                "........ssssssssssssssss........",
-                ".........ssssssWWssssss.........",
-                ".........sssssWWWWsssss.........",
-                ".........sssssWWWWsssss.tt......",
-                ".......ppsssssWWWWsssssstt......",
-                "......ppppssssWWWWsssssstt......",
-                "......LLLLssssWWWWsssss.tt......",
-                "......LLLLsssssssssssss.tt......",
-                "......LLLL..ssss..ssss..tt......",
-                "......LLLL..ssss..ssss.ttt......",
-                "......................ttt.......",
+                ".........ss.............ss..........",
+                "........sppss..........sppss........",
+                ".......sppppss........sppppss.......",
+                ".......sppppss........sppppss.......",
+                "......ssssssssssssssssssssssss......",
+                ".....ssssssssssssssssssssssssss.....",
+                ".....ssWWWWWWssssssssssWWWWWWss.....",
+                ".....ssWWKKKKssssssssssWWKKKKss.....",
+                ".....ssWWKKCCssssssssssWWKKCCss.....",
+                ".....ssWWKKCCssssssssssWWKKCCss.....",
+                ".....ssssssssssssssssssssssssss.....",
+                ".....ssssssssssnnssssssssssssss.....",
+                ".....sRRssssssmmmmssssssssssRRs.....",
+                "......ssssssssssssssssssssssss......",
+                ".......ssssssssssssssssssssss.......",
+                "........ssssssssWWWWssssssss........",
+                "........sssssssWWWWWWsssssss.tt.....",
+                "........sssssssWWWWWWssssss.ttt.....",
+                ".......ppssssssWWWWWWssssss.ttt.....",
+                "......ppppsssssWWWWWWssssss.ttt.....",
+                "......LLLLsssssWWWWWWssssss.ttt.....",
+                "......LLLLsssssssssssssssss.ttt.....",
+                "......LLLL..sssss....sssss..ttt.....",
+                "......LLLL..sssss....sssss..ttt.....",
             ],
-            // Frame 1 (Typing right paw down)
+            // Frame 1: Right paw typing
             [
-                "........ssss........ssss........",
-                ".......sppppsssssssspppps.......",
-                ".......sppppsssssssspppps.......",
-                "......ssssssssssssssssssss......",
-                "......ssssssssssssssssssss......",
-                "......ssWWWWssssssssWWWWss......",
-                "......ssWWKKssssssssWWKKss......",
-                "......ssWWCCssssssssWWCCss......",
-                "......ssssssssssnsssssssss......",
-                "......sRRsssssmmmmmssssRRs......",
-                ".......ssssssssssssssssss.......",
-                "........ssssssssssssssss........",
-                ".........ssssssWWssssss.........",
-                ".........sssssWWWWsssss.........",
-                ".........sssssWWWWsssss..tt.....",
-                ".........sssssWWWWsssss..tt.....",
-                "......LLLLssssWWWWsssss.tt......",
-                "......LLLLppssWWWWsssss.tt......",
-                "......LLLLppsssssssssss.tt......",
-                "......LLLL..ssss..ssss.ttt......",
-                "............ssss..ssss.ttt......",
-                "................................",
+                ".........ss.............ss..........",
+                "........sppss..........sppss........",
+                ".......sppppss........sppppss.......",
+                ".......sppppss........sppppss.......",
+                "......ssssssssssssssssssssssss......",
+                ".....ssssssssssssssssssssssssss.....",
+                ".....ssWWWWWWssssssssssWWWWWWss.....",
+                ".....ssWWKKKKssssssssssWWKKKKss.....",
+                ".....ssWWKKCCssssssssssWWKKCCss.....",
+                ".....ssWWKKCCssssssssssWWKKCCss.....",
+                ".....ssssssssssssssssssssssssss.....",
+                ".....ssssssssssnnssssssssssssss.....",
+                ".....sRRssssssmmmmssssssssssRRs.....",
+                "......ssssssssssssssssssssssss......",
+                ".......ssssssssssssssssssssss.......",
+                "........ssssssssWWWWssssssss........",
+                "........sssssssWWWWWWsssssss..tt....",
+                "........sssssssWWWWWWsssssss..tt....",
+                "........sssssssWWWWWWssssss..ttt....",
+                "......LLLLppsssWWWWWWssssss..ttt....",
+                "......LLLLppsssssssssssssss..ttt....",
+                "......LLLL..sssss....sssss...ttt....",
+                "......LLLL..sssss....sssss...ttt....",
+                "....................................",
             ]
         ];
 
         const COLOR_PALETTE = {
-            's': '#2563eb', // Rich cat fur (electric blue)
-            'p': '#f472b6', // Pink inner ears
-            'W': '#ffffff', // Eye white / chest bib
-            'K': '#09090b', // Deep pupil
-            'C': '#00d2ff', // Cyan eye highlight
-            'n': '#fda4af', // Cute nose
-            'm': '#1d4ed8', // Dark mouth line
-            'R': '#fb7185', // Rosy blush
-            't': '#1d4ed8', // Tail
-            'L': '#3f3f46', // Laptop body
+            's': '#3b82f6', // Rich friendly cat fur
+            'd': '#1d4ed8', // Shadow fur
+            'p': '#f472b6', // Pink ears
+            'W': '#ffffff', // Eye sclera / chest bib
+            'K': '#0f172a', // Big cute anime pupil
+            'C': '#00d2ff', // Glossy eye reflection
+            'n': '#fda4af', // Cute cat nose
+            'm': '#1e3a8a', // Cat whisker muzzle
+            'R': '#fb7185', // Soft blush cheeks
+            't': '#2563eb', // Animated tail
+            'L': '#334155', // Laptop chassis
         };
 
         function drawPixelArtCat() {
             catCtx.clearRect(0, 0, catCanvas.width, catCanvas.height);
 
-            // 1. Draw Wooden Desk
+            // 1. Уютный деревянный стол
             catCtx.fillStyle = '#1c1917';
-            catCtx.fillRect(10, 68, 100, 18);
+            catCtx.fillRect(10, 72, 108, 18);
             catCtx.fillStyle = '#292524';
-            catCtx.fillRect(10, 68, 100, 2);
+            catCtx.fillRect(10, 72, 108, 2);
 
-            // 2. Draw Coffee Mug
+            // 2. Кофейная кружка с медленным спокойным паром
             catCtx.fillStyle = '#f8fafc';
-            catCtx.fillRect(16, 56, 12, 12);
+            catCtx.fillRect(16, 60, 12, 12);
             catCtx.fillStyle = '#e2e8f0';
-            catCtx.fillRect(28, 59, 4, 6);
+            catCtx.fillRect(28, 63, 4, 6);
             catCtx.fillStyle = '#451a03';
-            catCtx.fillRect(18, 57, 8, 2);
+            catCtx.fillRect(18, 61, 8, 2);
 
-            // Coffee steam
-            const steamOffset = (animTick % 30) / 10;
-            catCtx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-            catCtx.fillRect(20 + Math.sin(animTick * 0.1) * 2, 50 - steamOffset * 3, 3, 5);
+            // Медленный пар от кофе
+            const steamSlow = (animTick % 60) / 20;
+            catCtx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+            catCtx.fillRect(20 + Math.sin(animTick * 0.05) * 1.5, 54 - steamSlow * 2.5, 3, 5);
 
-            // 3. Draw Lit Glowing Laptop
+            // 3. Светящийся ноутбук
             catCtx.fillStyle = '#27272a';
-            catCtx.fillRect(36, 42, 38, 26);
+            catCtx.fillRect(36, 46, 40, 26);
             catCtx.fillStyle = '#090d16';
-            catCtx.fillRect(38, 44, 34, 22);
+            catCtx.fillRect(38, 48, 36, 22);
 
-            // Glowing code lines
+            // Медленно бегущие строки кода на экране
             catCtx.fillStyle = '#00d2ff';
-            catCtx.fillRect(40, 46, (animTick % 20 < 10 ? 20 : 14), 2);
+            catCtx.fillRect(40, 50, (animTick % 40 < 20 ? 22 : 16), 2);
             catCtx.fillStyle = '#10b981';
-            catCtx.fillRect(40, 51, (animTick % 16 < 8 ? 26 : 18), 2);
+            catCtx.fillRect(40, 55, (animTick % 32 < 16 ? 28 : 20), 2);
             catCtx.fillStyle = '#c084fc';
-            catCtx.fillRect(40, 56, (animTick % 24 < 12 ? 16 : 22), 2);
+            catCtx.fillRect(40, 60, (animTick % 48 < 24 ? 18 : 24), 2);
             catCtx.fillStyle = '#fbbf24';
-            catCtx.fillRect(40, 61, 24, 2);
+            catCtx.fillRect(40, 65, 26, 2);
 
-            // Screen glow aura
-            catCtx.fillStyle = 'rgba(0, 210, 255, 0.08)';
-            catCtx.fillRect(32, 40, 46, 30);
+            // Мягкое свечение экрана
+            catCtx.fillStyle = 'rgba(0, 210, 255, 0.07)';
+            catCtx.fillRect(32, 44, 48, 30);
 
-            // 4. Draw Animated Pixel Cat
-            const frameIndex = Math.floor(animTick / 6) % 2;
+            // 4. Отрисовка котика — МЕДЛЕННАЯ спокойная анимация (в 2.5 раза медленнее)
+            const frameIndex = Math.floor(animTick / 16) % 2; // Медленная смена лапок
             const matrix = CAT_FRAMES[frameIndex];
-            const startX = 42;
-            const startY = 16 + (Math.floor(animTick / 12) % 2 ? 1 : 0);
+            const startX = 38;
+            const startY = 16 + (Math.floor(animTick / 32) % 2 ? 1 : 0); // Медленное спокойное дыхание
             const scale = 2;
 
             for (let row = 0; row < matrix.length; row++) {
