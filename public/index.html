@@ -499,14 +499,14 @@
 
         <!-- Bongo Cat Companion -->
         <div class="pixel-buddy-wrapper">
-            <div class="pet-speech-cloud" id="buddy-speech">ready... ⚡</div>
+            <div class="pet-speech-cloud" id="buddy-speech">chilling... 💤</div>
             <img id="cat-sprite-img" src="bongo-rest.png" alt="Bongo Cat" />
         </div>
 
         <!-- Terminal Footer -->
         <div class="terminal-footer">
             <span id="footer-count">● 0 entries logged</span>
-            <span>ready <span class="cursor"></span></span>
+            <span id="terminal-live-cursor"><span class="cursor"></span></span>
         </div>
     </div>
 
@@ -660,18 +660,18 @@
             if (isAgentWorking) {
                 bongoFrame = bongoFrame === 1 ? 2 : 1;
                 catImg.src = bongoFrame === 1 ? 'bongo-frame1.png' : 'bongo-frame2.png';
-                buddySpeech.innerText = 'coding live... ⚡';
+                buddySpeech.innerText = 'coding hard ⚡';
             } else {
                 catImg.src = 'bongo-rest.png'; // Лапки спокойно лежат на столе
-                buddySpeech.innerText = 'idle / waiting ☕';
+                buddySpeech.innerText = 'chilling... 💤';
             }
         }, 160); // Быстрая и бодрая печать лапками во время работы!
 
         function celebrateTask(cardEl) {
             triggerTargetedConfetti(cardEl);
-            if (buddySpeech) buddySpeech.innerText = 'milestone finished! 🎉';
+            if (buddySpeech) buddySpeech.innerText = 'milestone done! 🎉';
             setTimeout(() => {
-                if (buddySpeech) buddySpeech.innerText = isAgentWorking ? 'coding live... ⚡' : 'idle / waiting ☕';
+                if (buddySpeech) buddySpeech.innerText = isAgentWorking ? 'coding hard ⚡' : 'chilling... 💤';
             }, 4000);
         }
 
