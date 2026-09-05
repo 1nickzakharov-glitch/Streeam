@@ -14,6 +14,7 @@
             --text-main: #e4e4e7;
             --text-meta: rgba(255, 255, 255, 0.40);
             
+            /* Яркие сочные цвета префиксов без плашек */
             --color-user: #00d2ff;   /* Яркий голубой */
             --color-plan: #c084fc;   /* Яркий фиолетовый */
             --color-action: #facc15; /* Яркий желтый */
@@ -170,16 +171,17 @@
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 26px; /* Еще чуть больше свободного пространства между сообщениями */
+            gap: 26px; /* Просторное расстояние между событиями */
             scroll-behavior: smooth;
             scrollbar-width: none;
-            padding-bottom: 130px;
+            padding-bottom: 145px; /* Запас под крупного милого кота */
         }
 
         .terminal-stream::-webkit-scrollbar {
             display: none;
         }
 
+        /* Обычные записи: 14px отступ совпадает с внутренним текстом плашки пользователя */
         .log-entry {
             display: flex;
             flex-direction: column;
@@ -296,7 +298,7 @@
         @keyframes blink { 50% { opacity: 0; } }
 
         /* =========================================================
-           CALM, ADORABLE BIG-EYED PIXEL CAT (Smooth 16-bit Canvas)
+           ОРИГИНАЛЬНЫЙ РЫЖИЙ КОТ-ПРОГРАММИСТ (PIXELPAWS SPRITESHEET)
            ========================================================= */
         .pixel-buddy-wrapper {
             position: absolute;
@@ -312,11 +314,11 @@
         .pet-speech-cloud {
             background: #11131a;
             border-radius: 6px;
-            padding: 4px 9px;
+            padding: 4px 10px;
             font-size: 10px;
             font-weight: 500;
             color: #38bdf8;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
             white-space: nowrap;
             box-shadow: 0 4px 14px rgba(0, 0, 0, 0.85);
             animation: petBounce 3.6s ease-in-out infinite;
@@ -328,10 +330,10 @@
         }
 
         #cat-canvas {
-            width: 128px;
-            height: 96px;
+            width: 105px;
+            height: 150px;
             image-rendering: pixelated;
-            filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.9));
+            filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.95));
         }
 
         /* Canvas Confetti */
@@ -381,10 +383,10 @@
             <!-- Dynamic entries -->
         </div>
 
-        <!-- Живой, плавный, милый котик с большими выразительными глазами -->
+        <!-- Настоящий милый рыжий кот из PixelPaws с клавиатурой и ноутбуком -->
         <div class="pixel-buddy-wrapper">
-            <div class="pet-speech-cloud" id="buddy-speech">typing code... ⚡</div>
-            <canvas id="cat-canvas" width="128" height="96"></canvas>
+            <div class="pet-speech-cloud" id="buddy-speech">coding live... ⚡</div>
+            <canvas id="cat-canvas" width="210" height="300"></canvas>
         </div>
 
         <!-- Terminal Footer -->
@@ -454,8 +456,12 @@
                 const latest = rawEvents[rawEvents.length - 1];
                 if (latest.type === 'done') {
                     triggerMiniConfetti();
+                    catState = 'proud';
                     if (buddySpeech) buddySpeech.innerText = 'task completed! 🎉';
-                    setTimeout(() => { if (buddySpeech) buddySpeech.innerText = 'typing code... ⚡'; }, 3500);
+                    setTimeout(() => { 
+                        catState = 'typing';
+                        if (buddySpeech) buddySpeech.innerText = 'coding live... ⚡'; 
+                    }, 4000);
                 }
             }
             lastEventCount = rawEvents.length;
@@ -470,151 +476,66 @@
         }
 
         // =======================================================
-        // CALM, ADORABLE BIG-EYED PIXEL CAT RENDERER (SLOW PACED)
+        // PIXELPAWS SPRITESHEET ANIMATION RENDERER
         // =======================================================
         const catCanvas = document.getElementById('cat-canvas');
         const catCtx = catCanvas.getContext('2d');
         catCtx.imageSmoothingEnabled = false;
 
-        let animTick = 0;
+        const spriteSheet = new Image();
+        spriteSheet.src = 'cat-orange-sheet.png';
 
-        // Котик с большими выразительными кошачьими глазами и мягкой анатомией
-        // s: шерсть, d: темная шерсть, p: розовые ушки, W: белок, K: большой зрачок, C: блик, n: носик, m: мордочка, R: щечки, t: хвост
-        const CAT_FRAMES = [
-            // Frame 0: Left paw typing
-            [
-                ".........ss.............ss..........",
-                "........sppss..........sppss........",
-                ".......sppppss........sppppss.......",
-                ".......sppppss........sppppss.......",
-                "......ssssssssssssssssssssssss......",
-                ".....ssssssssssssssssssssssssss.....",
-                ".....ssWWWWWWssssssssssWWWWWWss.....",
-                ".....ssWWKKKKssssssssssWWKKKKss.....",
-                ".....ssWWKKCCssssssssssWWKKCCss.....",
-                ".....ssWWKKCCssssssssssWWKKCCss.....",
-                ".....ssssssssssssssssssssssssss.....",
-                ".....ssssssssssnnssssssssssssss.....",
-                ".....sRRssssssmmmmssssssssssRRs.....",
-                "......ssssssssssssssssssssssss......",
-                ".......ssssssssssssssssssssss.......",
-                "........ssssssssWWWWssssssss........",
-                "........sssssssWWWWWWsssssss.tt.....",
-                "........sssssssWWWWWWssssss.ttt.....",
-                ".......ppssssssWWWWWWssssss.ttt.....",
-                "......ppppsssssWWWWWWssssss.ttt.....",
-                "......LLLLsssssWWWWWWssssss.ttt.....",
-                "......LLLLsssssssssssssssss.ttt.....",
-                "......LLLL..sssss....sssss..ttt.....",
-                "......LLLL..sssss....sssss..ttt.....",
-            ],
-            // Frame 1: Right paw typing
-            [
-                ".........ss.............ss..........",
-                "........sppss..........sppss........",
-                ".......sppppss........sppppss.......",
-                ".......sppppss........sppppss.......",
-                "......ssssssssssssssssssssssss......",
-                ".....ssssssssssssssssssssssssss.....",
-                ".....ssWWWWWWssssssssssWWWWWWss.....",
-                ".....ssWWKKKKssssssssssWWKKKKss.....",
-                ".....ssWWKKCCssssssssssWWKKCCss.....",
-                ".....ssWWKKCCssssssssssWWKKCCss.....",
-                ".....ssssssssssssssssssssssssss.....",
-                ".....ssssssssssnnssssssssssssss.....",
-                ".....sRRssssssmmmmssssssssssRRs.....",
-                "......ssssssssssssssssssssssss......",
-                ".......ssssssssssssssssssssss.......",
-                "........ssssssssWWWWssssssss........",
-                "........sssssssWWWWWWsssssss..tt....",
-                "........sssssssWWWWWWsssssss..tt....",
-                "........sssssssWWWWWWssssss..ttt....",
-                "......LLLLppsssWWWWWWssssss..ttt....",
-                "......LLLLppsssssssssssssss..ttt....",
-                "......LLLL..sssss....sssss...ttt....",
-                "......LLLL..sssss....sssss...ttt....",
-                "....................................",
-            ]
-        ];
+        const CELL_W = 210;
+        const CELL_H = 300;
+        const COLS = 4;
 
-        const COLOR_PALETTE = {
-            's': '#3b82f6', // Rich friendly cat fur
-            'd': '#1d4ed8', // Shadow fur
-            'p': '#f472b6', // Pink ears
-            'W': '#ffffff', // Eye sclera / chest bib
-            'K': '#0f172a', // Big cute anime pupil
-            'C': '#00d2ff', // Glossy eye reflection
-            'n': '#fda4af', // Cute cat nose
-            'm': '#1e3a8a', // Cat whisker muzzle
-            'R': '#fb7185', // Soft blush cheeks
-            't': '#2563eb', // Animated tail
-            'L': '#334155', // Laptop chassis
-        };
+        // Frames from manifest:
+        // typing: 16, 17
+        // proud: 34
+        // idle: 0, 1
+        let catState = 'typing';
+        let frameCounter = 0;
 
-        function drawPixelArtCat() {
-            catCtx.clearRect(0, 0, catCanvas.width, catCanvas.height);
-
-            // 1. Уютный деревянный стол
-            catCtx.fillStyle = '#1c1917';
-            catCtx.fillRect(10, 72, 108, 18);
-            catCtx.fillStyle = '#292524';
-            catCtx.fillRect(10, 72, 108, 2);
-
-            // 2. Кофейная кружка с медленным спокойным паром
-            catCtx.fillStyle = '#f8fafc';
-            catCtx.fillRect(16, 60, 12, 12);
-            catCtx.fillStyle = '#e2e8f0';
-            catCtx.fillRect(28, 63, 4, 6);
-            catCtx.fillStyle = '#451a03';
-            catCtx.fillRect(18, 61, 8, 2);
-
-            // Медленный пар от кофе
-            const steamSlow = (animTick % 60) / 20;
-            catCtx.fillStyle = 'rgba(255, 255, 255, 0.35)';
-            catCtx.fillRect(20 + Math.sin(animTick * 0.05) * 1.5, 54 - steamSlow * 2.5, 3, 5);
-
-            // 3. Светящийся ноутбук
-            catCtx.fillStyle = '#27272a';
-            catCtx.fillRect(36, 46, 40, 26);
-            catCtx.fillStyle = '#090d16';
-            catCtx.fillRect(38, 48, 36, 22);
-
-            // Медленно бегущие строки кода на экране
-            catCtx.fillStyle = '#00d2ff';
-            catCtx.fillRect(40, 50, (animTick % 40 < 20 ? 22 : 16), 2);
-            catCtx.fillStyle = '#10b981';
-            catCtx.fillRect(40, 55, (animTick % 32 < 16 ? 28 : 20), 2);
-            catCtx.fillStyle = '#c084fc';
-            catCtx.fillRect(40, 60, (animTick % 48 < 24 ? 18 : 24), 2);
-            catCtx.fillStyle = '#fbbf24';
-            catCtx.fillRect(40, 65, 26, 2);
-
-            // Мягкое свечение экрана
-            catCtx.fillStyle = 'rgba(0, 210, 255, 0.07)';
-            catCtx.fillRect(32, 44, 48, 30);
-
-            // 4. Отрисовка котика — МЕДЛЕННАЯ спокойная анимация (в 2.5 раза медленнее)
-            const frameIndex = Math.floor(animTick / 16) % 2; // Медленная смена лапок
-            const matrix = CAT_FRAMES[frameIndex];
-            const startX = 38;
-            const startY = 16 + (Math.floor(animTick / 32) % 2 ? 1 : 0); // Медленное спокойное дыхание
-            const scale = 2;
-
-            for (let row = 0; row < matrix.length; row++) {
-                for (let col = 0; col < matrix[row].length; col++) {
-                    const char = matrix[row][col];
-                    if (char !== '.' && COLOR_PALETTE[char]) {
-                        catCtx.fillStyle = COLOR_PALETTE[char];
-                        catCtx.fillRect(startX + col * scale, startY + row * scale, scale, scale);
-                    }
-                }
-            }
-
-            animTick++;
-            requestAnimationFrame(drawPixelArtCat);
+        function getCellCoords(frameIndex) {
+            const col = frameIndex % COLS;
+            const row = Math.floor(frameIndex / COLS);
+            return { x: col * CELL_W, y: row * CELL_H };
         }
 
-        drawPixelArtCat();
+        function animateCatSprite() {
+            catCtx.clearRect(0, 0, CELL_W, CELL_H);
+
+            if (spriteSheet.complete && spriteSheet.naturalWidth > 0) {
+                let currentFrame = 16;
+
+                if (catState === 'typing') {
+                    // Calm, smooth typing: switch every 10 ticks (~5 fps)
+                    const typingFrames = [16, 17];
+                    const idx = Math.floor(frameCounter / 10) % typingFrames.length;
+                    currentFrame = typingFrames[idx];
+                } else if (catState === 'proud') {
+                    currentFrame = 34; // Proud sparkle cat
+                } else if (catState === 'idle') {
+                    const idleFrames = [0, 1];
+                    const idx = Math.floor(frameCounter / 18) % idleFrames.length;
+                    currentFrame = idleFrames[idx];
+                }
+
+                const { x, y } = getCellCoords(currentFrame);
+                catCtx.drawImage(
+                    spriteSheet,
+                    x, y, CELL_W, CELL_H,
+                    0, 0, CELL_W, CELL_H
+                );
+            }
+
+            frameCounter++;
+            requestAnimationFrame(animateCatSprite);
+        }
+
+        spriteSheet.onload = () => {
+            animateCatSprite();
+        };
 
         // ============================================
         // Canvas Confetti
